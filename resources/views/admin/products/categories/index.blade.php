@@ -15,7 +15,8 @@
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-end">
                         <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+                        <li class="breadcrumb-item active" aria-current="page">Products</li>
+                        <li class="breadcrumb-item active" aria-current="page">Categories</li>
                     </ol>
                 </div>
             </div>
@@ -87,32 +88,6 @@
                                                     class="btn btn-sm btn-primary" title="Edit Category">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>
-
-                                                {{-- <!-- Deactivate/Activate Button -->
-                                                @if ($category->is_active)
-                                                    <form action="{{ route('admin.categories.deactivate', $category->id) }}"
-                                                        method="POST" class="d-inline">
-                                                        @csrf
-                                                        @method('PATCH')
-                                                        <button type="submit" class="btn btn-sm btn-warning"
-                                                            title="Deactivate Category"
-                                                            onclick="return confirm('Are you sure you want to deactivate this category?')">
-                                                            <i class="bi bi-toggle-off"></i>
-                                                        </button>
-                                                    </form>
-                                                @else
-                                                    <form action="{{ route('admin.categories.activate', $category->id) }}"
-                                                        method="POST" class="d-inline">
-                                                        @csrf
-                                                        @method('PATCH')
-                                                        <button type="submit" class="btn btn-sm btn-success"
-                                                            title="Activate Category"
-                                                            onclick="return confirm('Are you sure you want to activate this category?')">
-                                                            <i class="bi bi-toggle-on"></i>
-                                                        </button>
-                                                    </form>
-                                                @endif --}}
-
                                                 <!-- Delete Button -->
                                                 <form action="{{ route('admin.categories.destroy', $category->id) }}"
                                                     method="POST" class="d-inline">
