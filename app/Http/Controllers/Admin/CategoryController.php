@@ -7,6 +7,9 @@ use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
 use Illuminate\Support\Str;
+use Exception;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 
 class CategoryController extends Controller
@@ -35,15 +38,29 @@ class CategoryController extends Controller
      */
     public function store(StoreCategoryRequest $request)
     {
-        $formData = $request->validated();
+        DB::beginTransaction();
 
-        $formData['slug'] = Str::slug($formData['name']);
+        try {
+            $formData = $request->validated();
+            $formData['slug'] = Str::slug($formData['name']);
 
-        Category::create($formData);
+            Category::create($formData);
 
-        return redirect()->route('admin.categories.index')->with('success', 'Category created successfully.');
+            DB::commit();
+
+            return redirect()->route('admin.categories.index')
+                ->with('success', 'Category created successfully.');
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            // Optional: log the actual error
+            Log::error('Category creation failed: ' . $e->getMessage());
+
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Something went wrong while creating the category.');
+        }
     }
-
     /**
      * Display the specified resource.
      */
@@ -65,16 +82,28 @@ class CategoryController extends Controller
      */
     public function update(UpdateCategoryRequest $request, Category $category)
     {
-        $formData = $request->validated();
+        DB::beginTransaction();
 
-        // Update the slug if the name has changed
-        if ($formData['name'] !== $category->name) {
+        try {
+            $formData = $request->validated();
             $formData['slug'] = Str::slug($formData['name']);
+
+            $category->update($formData);
+
+            DB::commit();
+
+            return redirect()->route('admin.categories.index')
+                ->with('success', 'Category updated successfully.');
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            // Optional: log the actual error
+            Log::error('Category update failed: ' . $e->getMessage());
+
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Something went wrong while updating the category.');
         }
-
-        $category->update($formData);
-
-        return redirect()->route('admin.categories.index')->with('success', 'Category updated successfully.');
     }
 
     /**
@@ -82,7 +111,23 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        $category->delete();
-        return redirect()->route('admin.categories.index')->with('error', 'Category deleted successfully.');
+        DB::beginTransaction();
+
+        try {
+            $category->delete();
+
+            DB::commit();
+
+            return redirect()->route('admin.categories.index')
+                ->with('error', 'Category deleted successfully.');
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            // Optional: log the actual error
+            Log::error('Category deletion failed: ' . $e->getMessage());
+
+            return redirect()->back()
+                ->with('error', 'Something went wrong while deleting the category.');
+        }
     }
 }
