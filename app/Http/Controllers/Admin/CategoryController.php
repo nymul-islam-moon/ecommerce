@@ -16,9 +16,10 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::withCount('subcategories')->paginate(5);
+        $categories = Category::withCount(['subcategories', 'childCategories'])->paginate(5);
         return view('admin.products.categories.index', compact('categories'));
     }
+
 
 
     /**

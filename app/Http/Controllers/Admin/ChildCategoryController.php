@@ -85,8 +85,11 @@ class ChildCategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ChildCategory $childCategory)
+    public function destroy(ChildCategory $childcategory)
     {
-        //
+        // dd($childCategory);
+        $childcategory->delete();
+
+        return redirect()->route('admin.childcategories.index')->with('error', 'Child Category deleted successfully.');
     }
 }

@@ -17,8 +17,10 @@ class SubCategoryController extends Controller
      */
     public function index()
     {
-        // Eager load the parent category to avoid N+1
-        $subCategories = SubCategory::with('category')->paginate(5);
+
+        $subCategories = SubCategory::with('category')
+            ->withCount('childCategories')
+            ->paginate(10);
 
         return view('admin.products.subcategories.index', compact('subCategories'));
     }

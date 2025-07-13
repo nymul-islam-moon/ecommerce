@@ -1,7 +1,7 @@
 {{-- resources/views/admin/dashboard.blade.php --}}
 @extends('admin.layouts.app')
 
-@section('title', 'Admin Dashboard')
+@section('title', 'Product Category')
 
 @section('admin_content')
     <div class="app-content-header">
@@ -60,6 +60,7 @@
                                         <th>Slug</th>
                                         <th>Description</th>
                                         <th style="width: 40px">SubCategories</th>
+                                        <th style="width: 40px">Child Categories</th>
                                         <th style="width: 40px">Products</th>
                                         <th style="width: 150px">Actions</th> <!-- New Actions column -->
                                     </tr>
@@ -73,6 +74,9 @@
                                             <td>{{ $category->description ?? '-' }}</td>
                                             <td>
                                                 <span class="badge bg-info">{{ $category->subcategories_count ?? 0 }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info">{{ $category->child_categories_count ?? 0 }}</span>
                                             </td>
                                             <td>
                                                 <span class="badge bg-info">{{ $category->products_count ?? 0 }}</span>
