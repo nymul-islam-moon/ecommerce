@@ -4,7 +4,8 @@
         <!--begin::Brand Link-->
         <a href="./index.html" class="brand-link">
             <!--begin::Brand Image-->
-            <img src="{{ asset('admin/assets/img/AdminLTELogo.png') }}" alt="AdminLTE Logo" class="brand-image opacity-75 shadow" />
+            <img src="{{ asset('admin/assets/img/AdminLTELogo.png') }}" alt="AdminLTE Logo"
+                class="brand-image opacity-75 shadow" />
             <!--end::Brand Image-->
             <!--begin::Brand Text-->
             <span class="brand-text fw-light">{{ config('app.name') }}</span>
@@ -48,6 +49,42 @@
                         </li>
                     </ul>
                 </li>
+
+                <li class="nav-item menu-open">
+                    <a href="#" class="nav-link active">
+                        <i class="nav-icon bi bi-box-seam-fill"></i>
+                        <p>
+                            Products
+                            <i class="nav-arrow bi bi-chevron-right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('admin.categories.index') }}"
+                                class="nav-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>Category</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{{ route('admin.subcategories.index') }}"
+                                class="nav-link {{ request()->routeIs('admin.subcategories.*') ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>SubCategory</p>
+                            </a>
+                        </li>
+
+                        
+                        <li class="nav-item">
+                            <a href="./index3.html" class="nav-link">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>Dashboard v3</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
                 <li class="nav-item">
                     <a href="./generate/theme.html" class="nav-link">
                         <i class="nav-icon bi bi-palette"></i>
