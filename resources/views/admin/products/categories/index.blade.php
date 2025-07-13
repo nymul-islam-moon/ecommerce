@@ -57,6 +57,7 @@
                                     <tr>
                                         <th style="width: 10px">#</th>
                                         <th>Name</th>
+                                        <th>Slug</th>
                                         <th>Description</th>
                                         <th style="width: 40px">SubCategories</th>
                                         <th style="width: 40px">Products</th>
@@ -68,6 +69,7 @@
                                         <tr>
                                             <td>{{ $key + $categories->firstItem() }}</td>
                                             <td>{{ $category->name }}</td>
+                                            <td>{{ $category->slug }}</td>
                                             <td>{{ $category->description ?? '-' }}</td>
                                             <td>
                                                 <span class="badge bg-info">{{ $category->subcategories_count ?? 0 }}</span>
