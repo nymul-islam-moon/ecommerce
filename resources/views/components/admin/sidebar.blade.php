@@ -91,6 +91,14 @@
                             </a>
                         </li>
 
+                        <li class="nav-item">
+                            <a href="{{ route('admin.attributes.index') }}"
+                                class="nav-link {{ request()->routeIs('admin.attributes.*') ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>Attributes</p>
+                            </a>
+                        </li>
+
                         
                         <li class="nav-item">
                             <a href="./index3.html" class="nav-link">
