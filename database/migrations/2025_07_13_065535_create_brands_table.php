@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->string('image')->nullable(); // Optional image field
             $table->text('description')->nullable(); // Optional description field
+            $table->boolean('status')->default(true); // Active status
             $table->timestamps();
         });
     }

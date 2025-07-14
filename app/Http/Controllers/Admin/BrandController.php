@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreBrandRequest;
 use App\Http\Requests\UpdateBrandRequest;
 use App\Models\Brand;
+use App\Services\MediaService;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class BrandController extends Controller
 {
@@ -23,15 +26,32 @@ class BrandController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.products.brands.create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreBrandRequest $request)
+    public function store(StoreBrandRequest $request, MediaService $mediaService)
     {
-        //
+        $formData = $request->validated();
+
+        DB::beginTransaction();
+
+        try {
+            if ($request->hasFile('image')) {
+                $formData['image'] = $mediaService->storeFile($request->file('image'), 'brands');
+            }
+
+            $formData['slug'] = Str::slug($formData['name']);
+
+            Brand::create($formData);
+            DB::commit();
+            return redirect()->route('admin.brands.index')->with('success', 'Brand created successfully');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(['error' => 'Failed to create brand: ' . $e->getMessage()]);
+        }
     }
 
     /**
@@ -47,22 +67,55 @@ class BrandController extends Controller
      */
     public function edit(Brand $brand)
     {
-        //
+        return view('admin.products.brands.edit', compact('brand'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateBrandRequest $request, Brand $brand)
+    public function update(UpdateBrandRequest $request, Brand $brand, MediaService $mediaService)
     {
-        //
+        $formData = $request->validated();
+
+        DB::beginTransaction();
+
+        try {
+            if ($request->hasFile('image')) {
+                // Delete old image
+                $mediaService->deleteFile($brand->image, 'public');
+
+                // Store new image
+                $formData['image'] = $mediaService->storeFile($request->file('image'), 'brands');
+            }
+
+            $formData['slug'] = Str::slug($formData['name']);
+
+            $brand->update($formData);
+            DB::commit();
+            return redirect()->route('admin.brands.index')->with('success', 'Brand updated successfully');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(['error' => 'Failed to update brand: ' . $e->getMessage()]);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Brand $brand)
+    public function destroy(Brand $brand, MediaService $mediaService)
     {
-        //
+        DB::beginTransaction();
+
+        try {
+            // Delete the brand's image if it exists
+            $mediaService->deleteFile($brand->image, 'public');
+
+            $brand->delete();
+            DB::commit();
+            return redirect()->route('admin.brands.index')->with('success', 'Brand deleted successfully');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(['error' => 'Failed to delete brand: ' . $e->getMessage()]);
+        }
     }
 }
