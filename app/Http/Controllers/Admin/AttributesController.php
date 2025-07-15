@@ -5,8 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAttributesRequest;
 use App\Http\Requests\UpdateAttributesRequest;
-use App\Models\Attributes;
+use App\Models\Attribute;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class AttributesController extends Controller
 {
@@ -15,7 +16,7 @@ class AttributesController extends Controller
      */
     public function index()
     {
-        $attributes = Attributes::paginate(10);
+        $attributes = Attribute::paginate(10);
         return view('admin.products.attributes.index', compact('attributes'));
     }
 
@@ -32,12 +33,15 @@ class AttributesController extends Controller
      */
     public function store(StoreAttributesRequest $request)
     {
-        $formData = $request->validated();
-
+        $formData = $request->validated();        
         DB::beginTransaction();
         
         try {
-            Attributes::create($formData);
+
+            // Create slug for the attribute
+            $formData['slug'] = Str::slug($formData['name']);
+
+            Attribute::create($formData);
             DB::commit();
             return redirect()->route('admin.attributes.index')->with('success', 'Attribute created successfully');
         } catch (\Exception $e) {
@@ -49,32 +53,57 @@ class AttributesController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Attributes $attributes)
+    public function show(Attribute $attribute)
     {
-        //
+        // here attributes will comes with attribute values
+        $attribute->load('values');
+        return view('admin.products.attributes.show', compact('attribute'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Attributes $attributes)
+    public function edit(Attribute $attribute)
     {
-        //
+
+        return view('admin.products.attributes.edit', compact('attribute'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateAttributesRequest $request, Attributes $attributes)
+    public function update(UpdateAttributesRequest $request, Attribute $attributes)
     {
-        //
+        $formData = $request->validated();
+        DB::beginTransaction();
+
+        try {
+            // Update slug for the attribute
+            $formData['slug'] = Str::slug($formData['name']);
+
+            $attributes->update($formData);
+            DB::commit();
+            return redirect()->route('admin.attributes.index')->with('success', 'Attribute updated successfully');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(['error' => 'Failed to update attribute: ' . $e->getMessage()]);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Attributes $attributes)
+    public function destroy(Attribute $attribute)
     {
-        //
+        DB::beginTransaction();
+
+        try {
+            $attribute->delete();
+            DB::commit();
+            return redirect()->route('admin.attributes.index')->with('error', 'Attribute deleted successfully');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(['error' => 'Failed to delete attribute: ' . $e->getMessage()]);
+        }
     }
 }

@@ -33,14 +33,16 @@
                         @if (session('success'))
                             <div class="alert alert-success alert-dismissible fade show" role="alert">
                                 {{ session('success') }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                    aria-label="Close"></button>
                             </div>
-                        @endif 
+                        @endif
 
                         @if (session('error'))
                             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                                 {{ session('error') }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                    aria-label="Close"></button>
                             </div>
                         @endif
 
@@ -63,19 +65,27 @@
                                             <td>{{ $attribute->slug }}</td>
                                             <td>{{ $attribute->type }}</td>
                                             <td class="text-center">
-                                                <a href="{{ route('admin.attributes.edit', $attribute->id) }}"
-                                                   class="btn btn-sm btn-primary">
-                                                    Edit
-                                                </a>
-                                                <form action="{{ route('admin.attributes.destroy', $attribute->id) }}"
-                                                      method="POST" class="d-inline-block">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-danger"
+                                                <div class="d-flex justify-content-center flex-wrap gap-1">
+                                                    <a href="{{ route('admin.attributes.show', $attribute->id) }}"
+                                                        class="btn btn-sm btn-info">
+                                                        <i class="bi bi-eye"></i> View
+                                                    </a>
+
+                                                    <a href="{{ route('admin.attributes.edit', $attribute->id) }}"
+                                                        class="btn btn-sm btn-primary">
+                                                        Edit
+                                                    </a>
+
+                                                    <form action="{{ route('admin.attributes.destroy', $attribute->id) }}"
+                                                        method="POST">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-sm btn-danger"
                                                             onclick="return confirm('Are you sure you want to delete this attribute?')">
-                                                        Delete
-                                                    </button>
-                                                </form>
+                                                            Delete
+                                                        </button>
+                                                    </form>
+                                                </div>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -83,7 +93,7 @@
                             </table>
                         </div>
                     </div>
-                </div>  
+                </div>
             </div>
         </div>
     </div>

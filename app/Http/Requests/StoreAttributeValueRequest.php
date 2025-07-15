@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreAttributesRequest extends FormRequest
+class StoreAttributeValueRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,10 +21,10 @@ class StoreAttributesRequest extends FormRequest
      */
     public function rules(): array
     {
-        
+        // here use the attribute_id for the attribute this value belongs to and the attribute value will be unique within that attribute
         return [
-            'name' => 'required|string|max:255|unique:attributes,name',
-            'type' => 'required|string|in:text,select,checkbox',
+            'attribute_id' => 'required|exists:attributes,id',
+            'value' => 'required|string|max:255|unique:attribute_values,value,NULL,id,attribute_id,' . $this->attribute_id,
         ];
     }
 }

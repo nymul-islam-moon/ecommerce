@@ -3,8 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class StoreAttributesRequest extends FormRequest
+class UpdateAttributeValueRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,10 +22,17 @@ class StoreAttributesRequest extends FormRequest
      */
     public function rules(): array
     {
-        
         return [
-            'name' => 'required|string|max:255|unique:attributes,name',
-            'type' => 'required|string|in:text,select,checkbox',
+            'value' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('attribute_values')
+                    ->where(function ($query) {
+                        return $query->where('attribute_id', $this->input('attribute_id'));
+                    })
+                    ->ignore($this->route('attributeValue')->id),
+            ],
         ];
     }
 }
