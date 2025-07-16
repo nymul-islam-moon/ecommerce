@@ -32,6 +32,7 @@
                         @method('PUT')
                         <div class="mb-3">
                             <label for="value" class="form-label">Value</label>
+                            <input type="hidden" name="attribute_id" value="{{ $attributeValue->attribute_id }}">
                             <input type="text" name="value" id="value"
                                 value="{{ old('value', $attributeValue->value) }}"
                                 class="form-control @error('value') is-invalid @enderror" required>

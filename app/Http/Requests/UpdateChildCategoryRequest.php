@@ -22,20 +22,20 @@ class UpdateChildCategoryRequest extends FormRequest
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
-{
-    return [
-        'name' => [
-            'required',
-            'string',
-            'max:255',
-            Rule::unique('child_categories')
-                ->where(function ($query) {
-                    return $query->where('subcategory_id', $this->input('subcategory_id'));
-                })
-                ->ignore($this->route('childcategory')->id),
-        ],
-        'description' => 'nullable|string',
-        'subcategory_id' => 'required|exists:sub_categories,id',
-    ];
-}
+    {
+        return [
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('child_categories')
+                    ->where(function ($query) {
+                        return $query->where('subcategory_id', $this->input('subcategory_id'));
+                    })
+                    ->ignore($this->route('childcategory')->id),
+            ],
+            'description' => 'nullable|string',
+            'subcategory_id' => 'required|exists:sub_categories,id',
+        ];
+    }
 }
