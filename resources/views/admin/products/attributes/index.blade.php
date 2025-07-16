@@ -53,7 +53,6 @@
                                         <th style="width: 10px">#</th>
                                         <th>Name</th>
                                         <th>Slug</th>
-                                        <th>Type</th>
                                         <th style="width: 150px">Actions</th>
                                     </tr>
                                 </thead>
@@ -63,7 +62,6 @@
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $attribute->name }}</td>
                                             <td>{{ $attribute->slug }}</td>
-                                            <td>{{ $attribute->type }}</td>
                                             <td class="text-center">
                                                 <div class="d-flex justify-content-center flex-wrap gap-1">
                                                     <a href="{{ route('admin.attributes.show', $attribute->id) }}"

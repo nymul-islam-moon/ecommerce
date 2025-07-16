@@ -72,16 +72,15 @@ class AttributesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateAttributesRequest $request, Attribute $attributes)
+    public function update(UpdateAttributesRequest $request, Attribute $attribute)
     {
         $formData = $request->validated();
         DB::beginTransaction();
-
         try {
             // Update slug for the attribute
             $formData['slug'] = Str::slug($formData['name']);
-
-            $attributes->update($formData);
+            
+            $attribute->update($formData);
             DB::commit();
             return redirect()->route('admin.attributes.index')->with('success', 'Attribute updated successfully');
         } catch (\Exception $e) {

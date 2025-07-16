@@ -24,7 +24,6 @@ class StoreAttributesRequest extends FormRequest
         
         return [
             'name' => 'required|string|max:255|unique:attributes,name',
-            'type' => 'required|string|in:text,select,checkbox',
         ];
     }
 }

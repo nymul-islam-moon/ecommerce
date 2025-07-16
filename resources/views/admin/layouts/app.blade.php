@@ -97,6 +97,8 @@
         integrity="sha256-XPpPaZlU8S/HWf7FZLAncLg2SAkP8ScUTII89x9D3lY=" crossorigin="anonymous"></script>
 
 
+    @stack('admin_scripts')
+    
     <!-- OPTIONAL SCRIPTS -->
     <script>
         const SELECTOR_SIDEBAR_WRAPPER = '.sidebar-wrapper';

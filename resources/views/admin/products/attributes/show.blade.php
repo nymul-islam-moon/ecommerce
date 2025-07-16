@@ -31,7 +31,6 @@
                 <div class="card-body">
                     <p><strong>Name:</strong> {{ $attribute->name }}</p>
                     <p><strong>Slug:</strong> {{ $attribute->slug }}</p>
-                    <p><strong>Type:</strong> {{ $attribute->type }}</p>
                 </div>
             </div>
 

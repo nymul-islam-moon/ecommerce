@@ -47,21 +47,7 @@
                                     @enderror
                                 </div>
 
-                                <!-- Attribute Type -->
-                                <div class="mb-3">
-                                    <label for="type" class="form-label">Attribute Type <span class="text-danger">*</span></label>
-                                    <select name="type" id="type"
-                                        class="form-select @error('type') is-invalid @enderror" required>
-                                        <option value="">Select type</option>
-                                        <option value="text" {{ old('type') == 'text' ? 'selected' : '' }}>Text</option>
-                                        <option value="select" {{ old('type') == 'select' ? 'selected' : '' }}>Select</option>
-                                        <option value="checkbox" {{ old('type') == 'checkbox' ? 'selected' : '' }}>Checkbox</option>
-                                        <option value="radio" {{ old('type') == 'radio' ? 'selected' : '' }}>Radio</option>
-                                    </select>
-                                    @error('type')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
+            
 
                                 <!-- Submit Button -->
                                 <div class="d-flex justify-content-between">

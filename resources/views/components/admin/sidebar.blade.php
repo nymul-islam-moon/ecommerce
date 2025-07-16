@@ -99,6 +99,14 @@
                             </a>
                         </li>
 
+                        <li class="nav-item">
+                            <a href="{{ route('admin.products.index') }}"
+                                class="nav-link {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>Products</p>
+                            </a>
+                        </li>
+
                         
                         <li class="nav-item">
                             <a href="./index3.html" class="nav-link">

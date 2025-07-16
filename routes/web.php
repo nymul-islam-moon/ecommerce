@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ChildCategoryController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SubCategoryController;
 use Illuminate\Support\Facades\Route;
 
@@ -29,5 +30,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('attribute-values/{attributeValue}/edit', [AttributeValueController::class, 'edit'])->name('attribute-values.edit');
     Route::put('attribute-values/{attributeValue}', [AttributeValueController::class, 'update'])->name('attribute-values.update');
     Route::delete('attribute-values/{attributeValue}', [AttributeValueController::class, 'destroy'])->name('attribute-values.destroy');
+
+    Route::resource('products', ProductController::class);
 });
 
