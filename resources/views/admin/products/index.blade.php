@@ -24,6 +24,46 @@
             <div class="row">
                 <!-- Product Table Section -->
                 <div class="col-lg-12">
+                    <form method="GET" action="{{ route('admin.products.index') }}" class="mb-3">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <input type="text" name="name" class="form-control" placeholder="Product Name"
+                                    value="{{ request('name') }}">
+                            </div>
+
+                            <div class="col-md-3">
+                                <input type="text" name="short_description" class="form-control"
+                                    placeholder="Short Description" value="{{ request('short_description') }}">
+                            </div>
+
+                            <div class="col-md-2">
+                                <select name="status" class="form-select">
+                                    <option value="">All Statuses</option>
+                                    <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active
+                                    </option>
+                                    <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>
+                                        Inactive</option>
+                                    <option value="discontinued"
+                                        {{ request('status') === 'discontinued' ? 'selected' : '' }}>Discontinued
+                                    </option>
+                                    <option value="out_of_stock"
+                                        {{ request('status') === 'out_of_stock' ? 'selected' : '' }}>Out of Stock
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-2">
+                                <input type="number" name="stock_quantity" class="form-control"
+                                    placeholder="Stock Quantity" value="{{ request('stock_quantity') }}">
+                            </div>
+
+                            <div class="col-md-2 d-grid">
+                                <button type="submit" class="btn btn-primary"><i class="bi bi-funnel-fill"></i>
+                                    Filter</button>
+                            </div>
+                        </div>
+                    </form>
+
                     <div class="card mb-4">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h3 class="card-title flex-grow-1 mb-0">All Products</h3>
@@ -72,7 +112,8 @@
                                             <td>{{ $product->stock_quantity }}</td>
                                             <td>{{ $product->category?->name ?? 'N/A' }}</td>
                                             <td>
-                                                <span class="badge bg-{{ $product->status === 'active' ? 'success' : 'secondary' }}">
+                                                <span
+                                                    class="badge bg-{{ $product->status === 'active' ? 'success' : 'secondary' }}">
                                                     {{ ucfirst($product->status) }}
                                                 </span>
                                             </td>

@@ -55,21 +55,23 @@
     <!-- jsvectormap -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsvectormap@1.5.3/dist/css/jsvectormap.min.css"
         integrity="sha256-+uGLJmmTKOqBr+2E6KDYs/NRsHxSkONXFHUL0fy2O/4=" crossorigin="anonymous" />
+
+    @stack('admin_style')
 </head>
 
 <body class="layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary">
     <div class="app-wrapper">
 
         <x-admin.navbar />
-        
+
         <x-admin.sidebar />
-        
+
         <main class="app-main">
             @yield('admin_content')
         </main>
-        
+
         <x-admin.footer />
-    
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js"
@@ -96,9 +98,10 @@
     <script src="https://cdn.jsdelivr.net/npm/jsvectormap@1.5.3/dist/maps/world.js"
         integrity="sha256-XPpPaZlU8S/HWf7FZLAncLg2SAkP8ScUTII89x9D3lY=" crossorigin="anonymous"></script>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     @stack('admin_scripts')
-    
+
     <!-- OPTIONAL SCRIPTS -->
     <script>
         const SELECTOR_SIDEBAR_WRAPPER = '.sidebar-wrapper';

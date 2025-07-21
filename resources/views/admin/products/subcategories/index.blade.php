@@ -3,6 +3,14 @@
 
 @section('title', 'Admin Dashboard')
 
+@push('admin_style')
+    <style>
+        .small.text-muted {
+            padding-right: 10px;
+        }
+    </style>
+@endpush
+
 @section('admin_content')
     <div class="app-content-header">
         <!--begin::Container-->

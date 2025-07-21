@@ -7,6 +7,7 @@ use App\Http\Requests\StoreSubCategoryRequest;
 use App\Http\Requests\UpdateSubCategoryRequest;
 use App\Models\Category;
 use App\Models\SubCategory;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 
@@ -92,5 +93,16 @@ class SubCategoryController extends Controller
         $subcategory->delete();
 
         return redirect()->route('admin.subcategories.index')->with('error', 'SubCategory deleted successfully.');
+    }
+
+    /**
+     * Select subcategories based on category ID.
+     */
+    public function selectSubCategories(Request $request)
+    {
+        $categoryId = $request->category_id;
+        $subcategories = SubCategory::where('category_id', $categoryId)->get();
+
+        return response()->json($subcategories);
     }
 }

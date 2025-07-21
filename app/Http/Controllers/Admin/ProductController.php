@@ -11,18 +11,39 @@ use App\Models\ChildCategory;
 use App\Models\Product;
 use App\Models\SubCategory;
 use App\Models\Attribute;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // get all products with pagination and it's relationss also for category, subcategory, childcategory, brand, attributes
-        $products = Product::withRelations()->paginate(10);
+        $query = Product::withRelations();
+
+        if ($request->filled('name')) {
+            $query->where('name', 'like', '%' . $request->name . '%');
+        }
+
+        if ($request->filled('short_description')) {
+            $query->where('short_description', 'like', '%' . $request->short_description . '%');
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('stock_quantity')) {
+            $query->where('stock_quantity', $request->stock_quantity);
+        }
+
+        $products = $query->paginate(10)->appends($request->all());
+
         return view('admin.products.index', compact('products'));
     }
+
+
 
     /**
      * Show the form for creating a new resource.

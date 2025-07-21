@@ -130,4 +130,13 @@ class CategoryController extends Controller
                 ->with('error', 'Something went wrong while deleting the category.');
         }
     }
+
+    /**
+     * Get categories for select input.
+     */
+    public function selectCategories()
+    {
+        $categories = Category::select('id', 'name')->get();
+        return response()->json($categories);
+    }
 }

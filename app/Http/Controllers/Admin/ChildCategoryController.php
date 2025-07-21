@@ -8,6 +8,8 @@ use App\Http\Requests\UpdateChildCategoryRequest;
 use App\Models\ChildCategory;
 use App\Models\SubCategory;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+
 
 class ChildCategoryController extends Controller
 {
@@ -91,5 +93,16 @@ class ChildCategoryController extends Controller
         $childcategory->delete();
 
         return redirect()->route('admin.childcategories.index')->with('error', 'Child Category deleted successfully.');
+    }
+
+
+    /**
+     * Select child categories based on subcategory ID.
+     */
+    public function selectChildCategories(Request $request)
+    {
+        $subcategoryId = $request->subcategory_id;
+        $childcategories = ChildCategory::where('subcategory_id', $subcategoryId)->get();
+        return response()->json($childcategories);
     }
 }

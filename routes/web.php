@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 // Attribute value routes (nested under attribute)
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    
+
     Route::resource('categories', CategoryController::class);
     Route::resource('subcategories', SubCategoryController::class);
     Route::resource('childcategories', ChildCategoryController::class);
@@ -32,5 +32,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('attribute-values/{attributeValue}', [AttributeValueController::class, 'destroy'])->name('attribute-values.destroy');
 
     Route::resource('products', ProductController::class);
-});
 
+    // Route for select sections data
+    Route::get('select-categories', [CategoryController::class, 'selectCategories'])->name('select.categories');
+    Route::get('select-subcategories', [SubCategoryController::class, 'selectSubCategories'])->name('select.subcategories');
+    Route::get('select-childcategories', [ChildCategoryController::class, 'selectChildCategories'])->name('select.childcategories');
+
+});
