@@ -44,6 +44,8 @@ class CreateProductsTable extends Migration
             $table->text('return_policy')->nullable();
             $table->integer('return_days')->nullable();
 
+            $table->string('main_image')->nullable();
+
             // SEO
             $table->string('meta_title')->nullable();
             $table->text('meta_description')->nullable();

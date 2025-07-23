@@ -11,7 +11,10 @@ use App\Models\ChildCategory;
 use App\Models\Product;
 use App\Models\SubCategory;
 use App\Models\Attribute;
+use App\Services\MediaService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -51,21 +54,71 @@ class ProductController extends Controller
     public function create()
     {
         return view('admin.products.create', [
-            'categories' => Category::all(),
-            'subcategories' => SubCategory::all(),
-            'childCategories' => ChildCategory::all(),
-            'brands' => Brand::all(),
-            'attributes' => Attribute::with('values')->get(),
+            // 'categories' => Category::all(),
+            // 'subcategories' => SubCategory::all(),
+            // 'childCategories' => ChildCategory::all(),
+            // 'brands' => Brand::all(),
+            // 'attributes' => Attribute::with('values')->get(),
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreProductRequest $request)
+    public function store(StoreProductRequest $request, MediaService $mediaService)
     {
-        //
+        $formData = $request->validated();
+
+        dd($formData);
+
+        DB::beginTransaction();
+
+        try {
+            // Generate slug if not provided
+            if (empty($formData['slug'])) {
+                $formData['slug'] = Str::slug($formData['name']);
+            }
+
+            // Handle main image upload
+            if ($request->hasFile('main_image')) {
+                $formData['main_image'] = $mediaService->storeFile($request->file('main_image'), 'products');
+            }
+
+            // Handle gallery images upload
+            $galleryImages = [];
+            if ($request->hasFile('gallery_images')) {
+                foreach ($request->file('gallery_images') as $image) {
+                    $galleryImages[] = $mediaService->storeFile($image, 'products/gallery');
+                }
+            }
+
+            // Create product
+            $product = Product::create($formData);
+
+            // Save gallery images (if you have a separate table for product images)
+            if (!empty($galleryImages)) {
+                foreach ($galleryImages as $img) {
+                    $product->images()->create(['image_path' => $img]);
+                }
+            }
+
+            // Attach attributes
+            if ($request->has('attribute_values')) {
+                foreach ($request->attribute_values as $attributeId => $valueId) {
+                    if ($valueId) {
+                        $product->attributes()->attach($attributeId, ['value_id' => $valueId]);
+                    }
+                }
+            }
+
+            DB::commit();
+            return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Failed to create product: ' . $e->getMessage()]);
+        }
     }
+
 
     /**
      * Display the specified resource.
