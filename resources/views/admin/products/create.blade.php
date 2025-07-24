@@ -27,8 +27,9 @@
     <div class="app-content">
         <div class="container-fluid">
             <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
-
                 @csrf
+
+                {{-- Basic Info --}}
                 <div class="card mb-4">
                     <div class="card-header">
                         <h4>Basic Product Info</h4>
@@ -75,40 +76,7 @@
                     </div>
                 </div>
 
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h4>Pricing & Inventory</h4>
-                    </div>
-                    <div class="card-body row g-3">
-                        <div class="col-md-4">
-                            <label>Price</label>
-                            <input type="number" name="price" step="0.01"
-                                class="form-control @error('price') is-invalid @enderror" value="{{ old('price') }}">
-                            @error('price')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="col-md-4">
-                            <label>Sale Price</label>
-                            <input type="number" name="sale_price" step="0.01"
-                                class="form-control @error('sale_price') is-invalid @enderror"
-                                value="{{ old('sale_price') }}">
-                            @error('sale_price')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="col-md-4">
-                            <label>Stock Quantity</label>
-                            <input type="number" name="stock_quantity"
-                                class="form-control @error('stock_quantity') is-invalid @enderror"
-                                value="{{ old('stock_quantity') }}">
-                            @error('stock_quantity')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
-                </div>
-
+                {{-- Category & Brand --}}
                 <div class="card mb-4">
                     <div class="card-header">
                         <h4>Category & Brand</h4>
@@ -116,77 +84,66 @@
                     <div class="card-body row g-3">
                         <div class="col-md-4">
                             <label>Category</label>
-                            <select name="category_id" id="category_id"
-                                class="form-select select2 @error('category_id') is-invalid @enderror">
+                            <select name="category_id" id="category_id" class="form-select select2">
                                 <option value="">Select Category</option>
                             </select>
-                            @error('category_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
                         </div>
-
                         <div class="col-md-4">
                             <label>Subcategory</label>
-                            <select name="subcategory_id" id="subcategory_id"
-                                class="form-select select2 @error('subcategory_id') is-invalid @enderror">
+                            <select name="subcategory_id" id="subcategory_id" class="form-select select2">
                                 <option value="">Select Subcategory</option>
                             </select>
-                            @error('subcategory_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
                         </div>
-
                         <div class="col-md-4">
                             <label>Child Category</label>
-                            <select name="child_category_id" id="child_category_id"
-                                class="form-select select2 @error('child_category_id') is-invalid @enderror">
+                            <select name="child_category_id" id="child_category_id" class="form-select select2">
                                 <option value="">Select Child Category</option>
                             </select>
-                            @error('child_category_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
                         </div>
-
                         <div class="col-md-4">
                             <label>Brand</label>
-                            <select name="brand_id" id="brand_id" class="form-select select2 @error('brand_id') is-invalid @enderror">
+                            <select name="brand_id" id="brand_id" class="form-select select2">
                                 <option value="">Select Brand</option>
                             </select>
-                            @error('brand_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
                         </div>
-
                         <div class="col-md-4">
                             <label>Status</label>
-                            <select name="status" class="form-select @error('status') is-invalid @enderror">
-                                <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
-                                <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive
-                                </option>
-                                <option value="out_of_stock" {{ old('status') == 'out_of_stock' ? 'selected' : '' }}>Out
-                                    of Stock</option>
-                                <option value="discontinued" {{ old('status') == 'discontinued' ? 'selected' : '' }}>
-                                    Discontinued</option>
+                            <select name="status" class="form-select">
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                                <option value="out_of_stock">Out of Stock</option>
+                                <option value="discontinued">Discontinued</option>
                             </select>
-                            @error('status')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
                         </div>
-
                         <div class="col-md-4">
                             <label>Featured?</label>
-                            <select name="is_featured" class="form-select @error('is_featured') is-invalid @enderror">
-                                <option value="0" {{ old('is_featured') == '0' ? 'selected' : '' }}>No</option>
-                                <option value="1" {{ old('is_featured') == '1' ? 'selected' : '' }}>Yes</option>
+                            <select name="is_featured" class="form-select">
+                                <option value="0">No</option>
+                                <option value="1">Yes</option>
                             </select>
-                            @error('is_featured')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Main & Gallery Images --}}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Main & Gallery Images</h4>
+                    </div>
+                    <div class="card-body row g-3">
+                        <div class="col-md-6">
+                            <label>Main Image (Thumbnail)</label>
+                            <input type="file" name="main_image" class="form-control" accept="image/*">
+                        </div>
+                        <div class="col-md-6">
+                            <label>Gallery Images</label>
+                            <input type="file" name="gallery_images[]" multiple class="form-control" accept="image/*">
                         </div>
                     </div>
                 </div>
 
 
+                {{-- Attributes --}}
                 <div class="card mb-4">
                     <div class="card-header">
                         <h4>Attributes</h4>
@@ -194,59 +151,29 @@
                     <div class="card-body row g-3">
                         @foreach ($attributes as $attribute)
                             <div class="col-md-4">
-                                <label for="attribute_{{ $attribute->id }}">{{ $attribute->name }}</label>
-                                <select name="attribute_values[{{ $attribute->id }}]"
-                                    id="attribute_{{ $attribute->id }}"
-                                    class="form-select @error('attribute_values.' . $attribute->id) is-invalid @enderror">
-                                    <option value="">Select {{ $attribute->name }}</option>
+                                <label>{{ $attribute->name }}</label>
+                                <select name="attribute_values[{{ $attribute->id }}][]"
+                                    class="form-select attribute-select select2" multiple>
                                     @foreach ($attribute->values as $value)
-                                        <option value="{{ $value->id }}"
-                                            {{ old('attribute_values.' . $attribute->id) == $value->id ? 'selected' : '' }}>
-                                            {{ $value->value }}
-                                        </option>
+                                        <option value="{{ $value->id }}">{{ $value->value }}</option>
                                     @endforeach
                                 </select>
-                                @error('attribute_values.' . $attribute->id)
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
                             </div>
                         @endforeach
                     </div>
                 </div>
 
+                {{-- Dynamic Pricing & Inventory --}}
                 <div class="card mb-4">
                     <div class="card-header">
-                        <h4>Product Images</h4>
+                        <h4>Pricing, Stock & Images (Per Combination)</h4>
                     </div>
-                    <div class="card-body row g-3">
-                        <div class="col-md-6">
-                            <label for="main_image">Main Image (Thumbnail)</label>
-                            <input type="file" name="main_image" id="main_image"
-                                class="form-control @error('main_image') is-invalid @enderror" accept="image/*">
-                            @error('main_image')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-6">
-                            <label for="gallery_images">Gallery Images</label>
-                            <input type="file" name="gallery_images[]" id="gallery_images" multiple
-                                class="form-control @error('gallery_images') is-invalid @enderror" accept="image/*">
-                            @error('gallery_images')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                            @if ($errors->has('gallery_images.*'))
-                                <div class="invalid-feedback">
-                                    @foreach ($errors->get('gallery_images.*') as $messages)
-                                        @foreach ($messages as $message)
-                                            {{ $message }}<br>
-                                        @endforeach
-                                    @endforeach
-                                </div>
-                            @endif
-                        </div>
+                    <div class="card-body" id="combination-pricing">
+                        <p class="text-muted">Select attribute values to generate combinations...</p>
                     </div>
                 </div>
+
+
 
                 <div class="card-footer">
                     <div class="d-flex justify-content-between">
@@ -267,25 +194,22 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         $(document).ready(function() {
-
-            // Initialize Select2
             $('.select2').select2({
-                placeholder: 'Select an option',
-                allowClear: true,
                 width: '100%'
             });
-
             // load brands on page load
-            function loadBrands(){
+            function loadBrands() {
                 $.ajax({
                     url: '{{ route('admin.select.brands') }}',
                     method: 'GET',
                     success: function(data) {
                         $('#brand_id').empty().append('<option value="">Select Brand</option>');
                         $.each(data, function(index, brand) {
-                            $('#brand_id').append('<option value="' + brand.id + '">' + brand.name + '</option>');
+                            $('#brand_id').append('<option value="' + brand.id + '">' + brand
+                                .name + '</option>');
                         });
-                        $('#brand_id').val('{{ old('brand_id') }}').trigger('change'); // Restore old value
+                        $('#brand_id').val('{{ old('brand_id') }}').trigger(
+                        'change'); // Restore old value
                     }
                 });
             }
@@ -303,7 +227,7 @@
                                 category.name + '</option>');
                         });
                         $('#category_id').val('{{ old('category_id') }}').trigger(
-                        'change'); // Restore old value
+                            'change'); // Restore old value
                     }
                 });
             }
@@ -370,6 +294,79 @@
                     .replace(/\s+/g, '-')
                     .replace(/-+/g, '-');
                 $('#slug').val(slug);
+            });
+
+            // Load brands/categories/subcategories (existing code omitted for brevity)
+
+            function generateCombinations(arrays) {
+                if (arrays.length === 0) return [
+                    []
+                ];
+                const result = [];
+                const rest = generateCombinations(arrays.slice(1));
+                for (const value of arrays[0]) {
+                    for (const combo of rest) {
+                        result.push([value, ...combo]);
+                    }
+                }
+                return result;
+            }
+
+            function loadCombinations() {
+                let attributeArrays = [];
+                let attributeNames = [];
+
+                $('.attribute-select').each(function() {
+                    const values = $(this).val();
+                    const name = $(this).prev('label').text();
+                    if (values && values.length > 0) {
+                        attributeArrays.push(values);
+                        attributeNames.push(name);
+                    }
+                });
+
+                if (attributeArrays.length === 0) {
+                    $('#combination-pricing').html(
+                        '<p class="text-muted">Select attribute values to generate combinations...</p>');
+                    return;
+                }
+
+                const combinations = generateCombinations(attributeArrays);
+
+                let html = `<table class="table table-bordered">
+            <thead>
+                <tr>`;
+                attributeNames.forEach(name => html += `<th>${name}</th>`);
+                html += `<th>Price</th><th>Stock Quantity</th><th>Image</th></tr></thead><tbody>`;
+
+                combinations.forEach((combo, index) => {
+                    html += `<tr>`;
+                    combo.forEach(val => {
+                        let text = $(`option[value="${val}"]`).text();
+                        html += `<td>${text}</td>`;
+                    });
+                    html += `
+                <td><input type="number" name="combinations[${index}][price]" class="form-control" step="0.01"></td>
+                <td><input type="number" name="combinations[${index}][stock_quantity]" class="form-control"></td>
+                <td>
+                    <label>Main:</label>
+                    <input type="file" name="combinations[${index}][main_image]" class="form-control mb-2" accept="image/*">
+                    <label>Gallery:</label>
+                    <input type="file" name="combinations[${index}][gallery_images][]" class="form-control" multiple accept="image/*">
+                </td>`;
+                    combo.forEach((val) => {
+                        html +=
+                            `<input type="hidden" name="combinations[${index}][attributes][]" value="${val}">`;
+                    });
+                    html += `</tr>`;
+                });
+
+                html += `</tbody></table>`;
+                $('#combination-pricing').html(html);
+            }
+
+            $(document).on('change', '.attribute-select', function() {
+                loadCombinations();
             });
         });
     </script>
