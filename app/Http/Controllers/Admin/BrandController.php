@@ -118,4 +118,16 @@ class BrandController extends Controller
             return redirect()->back()->withErrors(['error' => 'Failed to delete brand: ' . $e->getMessage()]);
         }
     }
+
+
+    /**
+     * Get a list of brands for select dropdowns.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function selectBrands()
+    {
+        // dd('hi');
+        return Brand::select('id', 'name')->orderBy('name')->get();
+    }
 }

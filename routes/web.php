@@ -37,5 +37,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('select-categories', [CategoryController::class, 'selectCategories'])->name('select.categories');
     Route::get('select-subcategories', [SubCategoryController::class, 'selectSubCategories'])->name('select.subcategories');
     Route::get('select-childcategories', [ChildCategoryController::class, 'selectChildCategories'])->name('select.childcategories');
+    Route::get('select-brands', [BrandController::class, 'selectBrands'])->name('select.brands');
 
 });

@@ -7,20 +7,28 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    /** @use HasFactory<\Database\Factories\ProductFactory> */
     use HasFactory;
 
     protected $fillable = [
         'name',
+        'sku',
+        'slug',
+        'short_description',
         'description',
         'price',
+        'sale_price',
+        'stock_quantity',
         'category_id',
         'subcategory_id',
-        'childcategory_id',
+        'child_category_id', // FIXED naming
         'brand_id',
-        'image',
+        'status',
+        'is_featured',
+        'main_image',
+        'gallery_images',
     ];
 
+    // Relations
     public function category()
     {
         return $this->belongsTo(Category::class);
@@ -31,7 +39,7 @@ class Product extends Model
         return $this->belongsTo(SubCategory::class);
     }
 
-    public function childcategory()
+    public function childCategory()
     {
         return $this->belongsTo(ChildCategory::class);
     }
@@ -52,9 +60,10 @@ class Product extends Model
     {
         return $this->hasMany(AttributeValue::class);
     }
-    
+
+    // Scope for eager loading
     public function scopeWithRelations($query)
     {
-        return $query->with(['category', 'subcategory', 'childcategory', 'brand', 'attributes']);
+        return $query->with(['category', 'subcategory', 'childCategory', 'brand', 'attributes']);
     }
 }

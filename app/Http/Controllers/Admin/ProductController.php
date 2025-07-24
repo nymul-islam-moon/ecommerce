@@ -58,7 +58,7 @@ class ProductController extends Controller
             // 'subcategories' => SubCategory::all(),
             // 'childCategories' => ChildCategory::all(),
             // 'brands' => Brand::all(),
-            // 'attributes' => Attribute::with('values')->get(),
+            'attributes' => Attribute::with('values')->get(),
         ]);
     }
 

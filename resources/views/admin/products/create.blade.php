@@ -2,6 +2,10 @@
 
 @section('title', 'Create Product')
 
+@push('admin_style')
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+@endpush
+
 @section('admin_content')
     <div class="app-content-header">
         <div class="container-fluid">
@@ -113,14 +117,8 @@
                         <div class="col-md-4">
                             <label>Category</label>
                             <select name="category_id" id="category_id"
-                                class="form-select @error('category_id') is-invalid @enderror">
+                                class="form-select select2 @error('category_id') is-invalid @enderror">
                                 <option value="">Select Category</option>
-                                @foreach ($categories as $cat)
-                                    <option value="{{ $cat->id }}"
-                                        {{ old('category_id') == $cat->id ? 'selected' : '' }}>
-                                        {{ $cat->name }}
-                                    </option>
-                                @endforeach
                             </select>
                             @error('category_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -130,7 +128,8 @@
                         <div class="col-md-4">
                             <label>Subcategory</label>
                             <select name="subcategory_id" id="subcategory_id"
-                                class="form-select @error('subcategory_id') is-invalid @enderror">
+                                class="form-select select2 @error('subcategory_id') is-invalid @enderror">
+                                <option value="">Select Subcategory</option>
                             </select>
                             @error('subcategory_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -140,14 +139,8 @@
                         <div class="col-md-4">
                             <label>Child Category</label>
                             <select name="child_category_id" id="child_category_id"
-                                class="form-select @error('child_category_id') is-invalid @enderror">
+                                class="form-select select2 @error('child_category_id') is-invalid @enderror">
                                 <option value="">Select Child Category</option>
-                                @foreach ($childCategories as $child)
-                                    <option value="{{ $child->id }}"
-                                        {{ old('child_category_id') == $child->id ? 'selected' : '' }}>
-                                        {{ $child->name }}
-                                    </option>
-                                @endforeach
                             </select>
                             @error('child_category_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -156,14 +149,8 @@
 
                         <div class="col-md-4">
                             <label>Brand</label>
-                            <select name="brand_id" class="form-select @error('brand_id') is-invalid @enderror">
+                            <select name="brand_id" id="brand_id" class="form-select select2 @error('brand_id') is-invalid @enderror">
                                 <option value="">Select Brand</option>
-                                @foreach ($brands as $brand)
-                                    <option value="{{ $brand->id }}"
-                                        {{ old('brand_id') == $brand->id ? 'selected' : '' }}>
-                                        {{ $brand->name }}
-                                    </option>
-                                @endforeach
                             </select>
                             @error('brand_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -198,6 +185,7 @@
                         </div>
                     </div>
                 </div>
+
 
                 <div class="card mb-4">
                     <div class="card-header">
@@ -260,7 +248,6 @@
                     </div>
                 </div>
 
-
                 <div class="card-footer">
                     <div class="d-flex justify-content-between">
                         <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">
@@ -277,16 +264,58 @@
 @endsection
 
 @push('admin_scripts')
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         $(document).ready(function() {
-            // Initialize tooltips
-            // $('[data-bs-toggle="tooltip"]').tooltip();
 
-            // on change category_id console log subcategory_id
+            // Initialize Select2
+            $('.select2').select2({
+                placeholder: 'Select an option',
+                allowClear: true,
+                width: '100%'
+            });
+
+            // load brands on page load
+            function loadBrands(){
+                $.ajax({
+                    url: '{{ route('admin.select.brands') }}',
+                    method: 'GET',
+                    success: function(data) {
+                        $('#brand_id').empty().append('<option value="">Select Brand</option>');
+                        $.each(data, function(index, brand) {
+                            $('#brand_id').append('<option value="' + brand.id + '">' + brand.name + '</option>');
+                        });
+                        $('#brand_id').val('{{ old('brand_id') }}').trigger('change'); // Restore old value
+                    }
+                });
+            }
+            loadBrands();
+
+            // Load Categories on page load
+            function loadCategories() {
+                $.ajax({
+                    url: '{{ route('admin.select.categories') }}',
+                    method: 'GET',
+                    success: function(data) {
+                        $('#category_id').empty().append('<option value="">Select Category</option>');
+                        $.each(data, function(index, category) {
+                            $('#category_id').append('<option value="' + category.id + '">' +
+                                category.name + '</option>');
+                        });
+                        $('#category_id').val('{{ old('category_id') }}').trigger(
+                        'change'); // Restore old value
+                    }
+                });
+            }
+            loadCategories();
+
+            // On Category change → Load Subcategories
             $('#category_id').on('change', function() {
                 var categoryId = $(this).val();
-                var subcategorySelect = $('select[name="subcategory_id"]');
+                var subcategorySelect = $('#subcategory_id');
                 var childCategorySelect = $('#child_category_id');
+                subcategorySelect.empty().append('<option value="">Select Subcategory</option>');
+                childCategorySelect.empty().append('<option value="">Select Child Category</option>');
 
                 if (categoryId) {
                     $.ajax({
@@ -296,30 +325,22 @@
                             category_id: categoryId
                         },
                         success: function(data) {
-                            subcategorySelect.empty();
-                            subcategorySelect.append(
-                                '<option value="">Select Subcategory</option>');
                             $.each(data, function(index, subcategory) {
                                 subcategorySelect.append('<option value="' + subcategory
                                     .id + '">' + subcategory.name + '</option>');
                             });
+                            subcategorySelect.val('{{ old('subcategory_id') }}').trigger(
+                                'change'); // Restore old value
                         }
                     });
-                } else {
-                    // Clear subcategory dropdown if no category is selected
-                    subcategorySelect.empty();
-                    subcategorySelect.append('<option value="">Select Subcategory</option>');
-
-                    // Clear child category dropdown if no subcategory is selected
-                    childCategorySelect.empty();
-                    childCategorySelect.append('<option value="">Select Child Category</option>');
                 }
             });
 
-            // here on change the subcategory_id console log child_category_id
+            // On Subcategory change → Load Child Categories
             $('#subcategory_id').on('change', function() {
                 var subcategoryId = $(this).val();
                 var childCategorySelect = $('#child_category_id');
+                childCategorySelect.empty().append('<option value="">Select Child Category</option>');
 
                 if (subcategoryId) {
                     $.ajax({
@@ -329,39 +350,27 @@
                             subcategory_id: subcategoryId
                         },
                         success: function(data) {
-                            childCategorySelect.empty();
-                            childCategorySelect.append(
-                                '<option value="">Select Child Category</option>');
                             $.each(data, function(index, childCategory) {
                                 childCategorySelect.append('<option value="' +
-                                    childCategory
-                                    .id + '">' + childCategory.name + '</option>');
+                                    childCategory.id + '">' + childCategory.name +
+                                    '</option>');
                             });
+                            childCategorySelect.val('{{ old('child_category_id') }}').trigger(
+                                'change'); // Restore old value
                         }
                     });
-                } else {
-                    // Clear child category dropdown if no subcategory is selected
-                    childCategorySelect.empty();
-                    childCategorySelect.append('<option value="">Select Child Category</option>');
                 }
-
             });
 
+            // Slug auto-generate from name
             $('#name').on('blur', function() {
                 const nameValue = $(this).val();
-                const slug = nameValue
-                    .toLowerCase()
-                    .trim()
-                    .replace(/[^a-z0-9\s-]/g, '') // Remove special chars
-                    .replace(/\s+/g, '-') // Replace spaces with -
-                    .replace(/-+/g, '-'); // Remove duplicate -
-
-                $('#slug').val(slug); // Set slug field value
+                const slug = nameValue.toLowerCase().trim()
+                    .replace(/[^a-z0-9\s-]/g, '')
+                    .replace(/\s+/g, '-')
+                    .replace(/-+/g, '-');
+                $('#slug').val(slug);
             });
-
-
-
-
         });
     </script>
 @endpush
