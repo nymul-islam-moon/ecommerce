@@ -4,6 +4,7 @@
 
 @push('admin_style')
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 @endpush
 
 @section('admin_content')
@@ -30,45 +31,53 @@
                 @csrf
 
                 {{-- Basic Info --}}
-                <div class="card mb-4">
+                <div class="card card-primary card-outline mb-4">
                     <div class="card-header">
-                        <h4>Basic Product Info</h4>
+                        <div class="card-title">
+                            Basic Product Info
+                            <i class="bi bi-info-circle ms-2 text-primary" data-bs-toggle="tooltip"
+                                title="Fill in the product name, SKU, slug, and descriptions. The slug will auto-generate from the name.">
+                            </i>
+                        </div>
                     </div>
-                    <div class="card-body row g-3">
-                        <div class="col-md-6">
-                            <label>Name</label>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Product Name</label>
                             <input type="text" name="name" id="name"
                                 class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}">
                             @error('name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                        <div class="col-md-3">
-                            <label>SKU</label>
-                            <input type="text" name="sku" id="sku"
-                                class="form-control @error('sku') is-invalid @enderror" value="{{ old('sku') }}">
-                            @error('sku')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="sku" class="form-label">SKU</label>
+                                <input type="text" name="sku" id="sku"
+                                    class="form-control @error('sku') is-invalid @enderror" value="{{ old('sku') }}">
+                                @error('sku')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="slug" class="form-label">Slug</label>
+                                <input type="text" name="slug" id="slug"
+                                    class="form-control @error('slug') is-invalid @enderror" value="{{ old('slug') }}">
+                                @error('slug')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
                         </div>
-                        <div class="col-md-3">
-                            <label>Slug</label>
-                            <input type="text" name="slug" id="slug"
-                                class="form-control @error('slug') is-invalid @enderror" value="{{ old('slug') }}">
-                            @error('slug')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="col-12">
-                            <label>Short Description</label>
-                            <textarea name="short_description" class="form-control @error('short_description') is-invalid @enderror">{{ old('short_description') }}</textarea>
+                        <div class="mb-3">
+                            <label for="short_description" class="form-label">Short Description</label>
+                            <textarea name="short_description" id="short_description"
+                                class="form-control @error('short_description') is-invalid @enderror">{{ old('short_description') }}</textarea>
                             @error('short_description')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                        <div class="col-12">
-                            <label>Full Description</label>
-                            <textarea name="description" class="form-control @error('description') is-invalid @enderror">{{ old('description') }}</textarea>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Full Description</label>
+                            <textarea name="description" id="description" class="form-control @error('description') is-invalid @enderror">{{ old('description') }}</textarea>
                             @error('description')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -77,103 +86,145 @@
                 </div>
 
                 {{-- Category & Brand --}}
-                <div class="card mb-4">
+                <div class="card card-success card-outline mb-4">
                     <div class="card-header">
-                        <h4>Category & Brand</h4>
+                        <div class="card-title">
+                            Category & Brand
+                            <i class="bi bi-info-circle ms-2 text-primary" data-bs-toggle="tooltip"
+                                title="Select category, subcategory, and brand for the product."></i>
+                        </div>
                     </div>
-                    <div class="card-body row g-3">
-                        <div class="col-md-4">
-                            <label>Category</label>
-                            <select name="category_id" id="category_id" class="form-select select2">
-                                <option value="">Select Category</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label>Subcategory</label>
-                            <select name="subcategory_id" id="subcategory_id" class="form-select select2">
-                                <option value="">Select Subcategory</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label>Child Category</label>
-                            <select name="child_category_id" id="child_category_id" class="form-select select2">
-                                <option value="">Select Child Category</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label>Brand</label>
-                            <select name="brand_id" id="brand_id" class="form-select select2">
-                                <option value="">Select Brand</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label>Status</label>
-                            <select name="status" class="form-select">
-                                <option value="active">Active</option>
-                                <option value="inactive">Inactive</option>
-                                <option value="out_of_stock">Out of Stock</option>
-                                <option value="discontinued">Discontinued</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label>Featured?</label>
-                            <select name="is_featured" class="form-select">
-                                <option value="0">No</option>
-                                <option value="1">Yes</option>
-                            </select>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="category_id" class="form-label">Category</label>
+                                <select name="category_id" id="category_id" class="form-select select2">
+                                    <option value="">Select Category</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="subcategory_id" class="form-label">Subcategory</label>
+                                <select name="subcategory_id" id="subcategory_id" class="form-select select2">
+                                    <option value="">Select Subcategory</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="child_category_id" class="form-label">Child Category</label>
+                                <select name="child_category_id" id="child_category_id" class="form-select select2">
+                                    <option value="">Select Child Category</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="brand_id" class="form-label">Brand</label>
+                                <select name="brand_id" id="brand_id" class="form-select select2">
+                                    <option value="">Select Brand</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="status" class="form-label">Status</label>
+                                <select name="status" class="form-select">
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                    <option value="out_of_stock">Out of Stock</option>
+                                    <option value="discontinued">Discontinued</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="is_featured" class="form-label">Featured?</label>
+                                <select name="is_featured" class="form-select">
+                                    <option value="0">No</option>
+                                    <option value="1">Yes</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 {{-- Main & Gallery Images --}}
-                <div class="card mb-4">
+                <div class="card card-info card-outline mb-4">
                     <div class="card-header">
-                        <h4>Main & Gallery Images</h4>
-                    </div>
-                    <div class="card-body row g-3">
-                        <div class="col-md-6">
-                            <label>Main Image (Thumbnail)</label>
-                            <input type="file" name="main_image" class="form-control" accept="image/*">
+                        <div class="card-title">
+                            Main & Gallery Images
+                            <i class="bi bi-info-circle ms-2 text-info" data-bs-toggle="tooltip"
+                                title="Upload the main thumbnail image for the product and additional gallery images.">
+                            </i>
                         </div>
-                        <div class="col-md-6">
-                            <label>Gallery Images</label>
-                            <input type="file" name="gallery_images[]" multiple class="form-control" accept="image/*">
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="main_image" class="form-label">Main Image (Thumbnail)</label>
+                            <input type="file" name="main_image" id="main_image"
+                                class="form-control @error('main_image') is-invalid @enderror" accept="image/*">
+                            @error('main_image')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <div class="form-text">Recommended size: 600x600px.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="gallery_images" class="form-label">Gallery Images</label>
+                            <input type="file" name="gallery_images[]" id="gallery_images"
+                                class="form-control @error('gallery_images') is-invalid @enderror" accept="image/*"
+                                multiple>
+                            @error('gallery_images')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <div class="form-text">You can select multiple images for product gallery.</div>
                         </div>
                     </div>
                 </div>
 
-
                 {{-- Attributes --}}
-                <div class="card mb-4">
+                <div class="card card-warning card-outline mb-4">
                     <div class="card-header">
-                        <h4>Attributes</h4>
+                        <div class="card-title">
+                            Product Attributes
+                            <i class="bi bi-info-circle ms-2 text-warning" data-bs-toggle="tooltip"
+                                title="Select attribute values like size, color, or material."></i>
+                        </div>
                     </div>
-                    <div class="card-body row g-3">
-                        @foreach ($attributes as $attribute)
-                            <div class="col-md-4">
-                                <label>{{ $attribute->name }}</label>
-                                <select name="attribute_values[{{ $attribute->id }}][]"
-                                    class="form-select attribute-select select2" multiple>
-                                    @foreach ($attribute->values as $value)
-                                        <option value="{{ $value->id }}">{{ $value->value }}</option>
-                                    @endforeach
-                                </select>
+                    <div class="card-body">
+                        @if ($attributes->count() > 0)
+                            <div class="row g-3">
+                                @foreach ($attributes as $attribute)
+                                    <div class="col-md-4">
+                                        <label class="form-label">{{ $attribute->name }}</label>
+                                        <select name="attribute_values[{{ $attribute->id }}][]"
+                                            class="form-select select2 attribute-select @error('attribute_values.' . $attribute->id) is-invalid @enderror"
+                                            multiple>
+                                            @foreach ($attribute->values as $value)
+                                                <option value="{{ $value->id }}">{{ $value->value }}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('attribute_values.' . $attribute->id)
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                @endforeach
                             </div>
-                        @endforeach
+                        @else
+                            <div class="alert alert-info mb-0">
+                                No attributes available. Please create attributes first.
+                            </div>
+                        @endif
                     </div>
                 </div>
 
                 {{-- Dynamic Pricing & Inventory --}}
-                <div class="card mb-4">
+                <div class="card card-success card-outline mb-4">
                     <div class="card-header">
-                        <h4>Pricing, Stock & Images (Per Combination)</h4>
+                        <div class="card-title">
+                            Pricing, Stock & Images (Per Combination)
+                            <i class="bi bi-info-circle ms-2 text-success" data-bs-toggle="tooltip"
+                                title="Once you select attributes above, combinations will be generated here.">
+                            </i>
+                        </div>
                     </div>
                     <div class="card-body" id="combination-pricing">
-                        <p class="text-muted">Select attribute values to generate combinations...</p>
+                        <div class="alert alert-info mb-0">
+                            Select attribute values to generate combinations...
+                        </div>
                     </div>
                 </div>
-
-
 
                 <div class="card-footer">
                     <div class="d-flex justify-content-between">
@@ -192,112 +243,90 @@
 
 @push('admin_scripts')
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+
     <script>
         $(document).ready(function() {
             $('.select2').select2({
                 width: '100%'
             });
-            // load brands on page load
-            function loadBrands() {
-                $.ajax({
-                    url: '{{ route('admin.select.brands') }}',
-                    method: 'GET',
-                    success: function(data) {
-                        $('#brand_id').empty().append('<option value="">Select Brand</option>');
-                        $.each(data, function(index, brand) {
-                            $('#brand_id').append('<option value="' + brand.id + '">' + brand
-                                .name + '</option>');
-                        });
-                        $('#brand_id').val('{{ old('brand_id') }}').trigger(
-                        'change'); // Restore old value
-                    }
-                });
-            }
-            loadBrands();
 
-            // Load Categories on page load
-            function loadCategories() {
-                $.ajax({
-                    url: '{{ route('admin.select.categories') }}',
-                    method: 'GET',
-                    success: function(data) {
-                        $('#category_id').empty().append('<option value="">Select Category</option>');
-                        $.each(data, function(index, category) {
-                            $('#category_id').append('<option value="' + category.id + '">' +
-                                category.name + '</option>');
-                        });
-                        $('#category_id').val('{{ old('category_id') }}').trigger(
-                            'change'); // Restore old value
-                    }
-                });
-            }
-            loadCategories();
-
-            // On Category change → Load Subcategories
-            $('#category_id').on('change', function() {
-                var categoryId = $(this).val();
-                var subcategorySelect = $('#subcategory_id');
-                var childCategorySelect = $('#child_category_id');
-                subcategorySelect.empty().append('<option value="">Select Subcategory</option>');
-                childCategorySelect.empty().append('<option value="">Select Child Category</option>');
-
-                if (categoryId) {
-                    $.ajax({
-                        url: '{{ route('admin.select.subcategories') }}',
-                        method: 'GET',
-                        data: {
-                            category_id: categoryId
-                        },
-                        success: function(data) {
-                            $.each(data, function(index, subcategory) {
-                                subcategorySelect.append('<option value="' + subcategory
-                                    .id + '">' + subcategory.name + '</option>');
-                            });
-                            subcategorySelect.val('{{ old('subcategory_id') }}').trigger(
-                                'change'); // Restore old value
-                        }
-                    });
-                }
+            // Tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function(el) {
+                return new bootstrap.Tooltip(el)
             });
 
-            // On Subcategory change → Load Child Categories
-            $('#subcategory_id').on('change', function() {
-                var subcategoryId = $(this).val();
-                var childCategorySelect = $('#child_category_id');
-                childCategorySelect.empty().append('<option value="">Select Child Category</option>');
+            // CKEditor
+            CKEDITOR.replace('short_description');
+            CKEDITOR.replace('description');
 
-                if (subcategoryId) {
-                    $.ajax({
-                        url: '{{ route('admin.select.childcategories') }}',
-                        method: 'GET',
-                        data: {
-                            subcategory_id: subcategoryId
-                        },
-                        success: function(data) {
-                            $.each(data, function(index, childCategory) {
-                                childCategorySelect.append('<option value="' +
-                                    childCategory.id + '">' + childCategory.name +
-                                    '</option>');
-                            });
-                            childCategorySelect.val('{{ old('child_category_id') }}').trigger(
-                                'change'); // Restore old value
-                        }
-                    });
-                }
-            });
-
-            // Slug auto-generate from name
+            // Slug
             $('#name').on('blur', function() {
-                const nameValue = $(this).val();
-                const slug = nameValue.toLowerCase().trim()
+                const slug = $(this).val().toLowerCase().trim()
                     .replace(/[^a-z0-9\s-]/g, '')
                     .replace(/\s+/g, '-')
                     .replace(/-+/g, '-');
                 $('#slug').val(slug);
             });
 
-            // Load brands/categories/subcategories (existing code omitted for brevity)
+            // Load brands
+            $.get('{{ route('admin.select.brands') }}', function(data) {
+                $('#brand_id').empty().append('<option value="">Select Brand</option>');
+                $.each(data, function(i, brand) {
+                    $('#brand_id').append('<option value="' + brand.id + '">' + brand.name +
+                        '</option>');
+                });
+                $('#brand_id').val('{{ old('brand_id') }}').trigger('change');
+            });
 
+            // Load categories
+            $.get('{{ route('admin.select.categories') }}', function(data) {
+                $('#category_id').empty().append('<option value="">Select Category</option>');
+                $.each(data, function(i, category) {
+                    $('#category_id').append('<option value="' + category.id + '">' + category
+                        .name + '</option>');
+                });
+                $('#category_id').val('{{ old('category_id') }}').trigger('change');
+            });
+
+            // Subcategories
+            $('#category_id').on('change', function() {
+                var id = $(this).val();
+                $('#subcategory_id').empty().append('<option value="">Select Subcategory</option>');
+                $('#child_category_id').empty().append('<option value="">Select Child Category</option>');
+                if (id) {
+                    $.get('{{ route('admin.select.subcategories') }}', {
+                        category_id: id
+                    }, function(data) {
+                        $.each(data, function(i, sub) {
+                            $('#subcategory_id').append('<option value="' + sub.id + '">' +
+                                sub.name + '</option>');
+                        });
+                        $('#subcategory_id').val('{{ old('subcategory_id') }}').trigger('change');
+                    });
+                }
+            });
+
+            // Child categories
+            $('#subcategory_id').on('change', function() {
+                var id = $(this).val();
+                $('#child_category_id').empty().append('<option value="">Select Child Category</option>');
+                if (id) {
+                    $.get('{{ route('admin.select.childcategories') }}', {
+                        subcategory_id: id
+                    }, function(data) {
+                        $.each(data, function(i, child) {
+                            $('#child_category_id').append('<option value="' + child.id +
+                                '">' + child.name + '</option>');
+                        });
+                        $('#child_category_id').val('{{ old('child_category_id') }}').trigger(
+                            'change');
+                    });
+                }
+            });
+
+            // Generate combinations
             function generateCombinations(arrays) {
                 if (arrays.length === 0) return [
                     []
@@ -318,7 +347,7 @@
 
                 $('.attribute-select').each(function() {
                     const values = $(this).val();
-                    const name = $(this).prev('label').text();
+                    const name = $(this).closest('.col-md-4').find('label').text();
                     if (values && values.length > 0) {
                         attributeArrays.push(values);
                         attributeNames.push(name);
@@ -327,33 +356,38 @@
 
                 if (attributeArrays.length === 0) {
                     $('#combination-pricing').html(
-                        '<p class="text-muted">Select attribute values to generate combinations...</p>');
+                        '<div class="alert alert-info mb-0">Select attribute values to generate combinations...</div>'
+                        );
                     return;
                 }
 
                 const combinations = generateCombinations(attributeArrays);
+                let html = `<div class="table-responsive"><table class="table table-bordered align-middle">
+                    <thead class="table-light"><tr>`;
 
-                let html = `<table class="table table-bordered">
-            <thead>
-                <tr>`;
                 attributeNames.forEach(name => html += `<th>${name}</th>`);
-                html += `<th>Price</th><th>Stock Quantity</th><th>Image</th></tr></thead><tbody>`;
+                html += `<th>Price</th><th>Stock</th><th>Images</th></tr></thead><tbody>`;
 
                 combinations.forEach((combo, index) => {
                     html += `<tr>`;
                     combo.forEach(val => {
-                        let text = $(`option[value="${val}"]`).text();
+                        let text = $(`.attribute-select option[value="${val}"]`).text();
                         html += `<td>${text}</td>`;
                     });
-                    html += `
-                <td><input type="number" name="combinations[${index}][price]" class="form-control" step="0.01"></td>
-                <td><input type="number" name="combinations[${index}][stock_quantity]" class="form-control"></td>
-                <td>
-                    <label>Main:</label>
-                    <input type="file" name="combinations[${index}][main_image]" class="form-control mb-2" accept="image/*">
-                    <label>Gallery:</label>
-                    <input type="file" name="combinations[${index}][gallery_images][]" class="form-control" multiple accept="image/*">
-                </td>`;
+
+                    html += `<td><input type="number" name="combinations[${index}][price]" class="form-control" step="0.01" placeholder="0.00"></td>
+                     <td><input type="number" name="combinations[${index}][stock_quantity]" class="form-control" placeholder="0"></td>
+                     <td>
+                        <div class="mb-2">
+                            <label class="form-label small">Main Image:</label>
+                            <input type="file" name="combinations[${index}][main_image]" class="form-control" accept="image/*">
+                        </div>
+                        <div>
+                            <label class="form-label small">Gallery Images:</label>
+                            <input type="file" name="combinations[${index}][gallery_images][]" class="form-control" multiple accept="image/*">
+                        </div>
+                     </td>`;
+
                     combo.forEach((val) => {
                         html +=
                             `<input type="hidden" name="combinations[${index}][attributes][]" value="${val}">`;
@@ -361,13 +395,11 @@
                     html += `</tr>`;
                 });
 
-                html += `</tbody></table>`;
+                html += `</tbody></table></div>`;
                 $('#combination-pricing').html(html);
             }
 
-            $(document).on('change', '.attribute-select', function() {
-                loadCombinations();
-            });
+            $(document).on('change', '.attribute-select', loadCombinations);
         });
     </script>
 @endpush
