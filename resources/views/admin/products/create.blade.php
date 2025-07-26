@@ -50,7 +50,16 @@
                             @enderror
                         </div>
                         <div class="row">
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Product Type</label>
+                                <select name="product_type" id="product_type" class="form-select">
+                                    <option value="simple" {{ old('product_type') == 'simple' ? 'selected' : '' }}>Simple
+                                        Product</option>
+                                    <option value="variable" {{ old('product_type') == 'variable' ? 'selected' : '' }}>
+                                        Variable Product</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
                                 <label for="sku" class="form-label">SKU</label>
                                 <input type="text" name="sku" id="sku"
                                     class="form-control @error('sku') is-invalid @enderror" value="{{ old('sku') }}">
@@ -58,7 +67,7 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-4 mb-3">
                                 <label for="slug" class="form-label">Slug</label>
                                 <input type="text" name="slug" id="slug"
                                     class="form-control @error('slug') is-invalid @enderror" value="{{ old('slug') }}">
@@ -140,8 +149,60 @@
                     </div>
                 </div>
 
-                {{-- Main & Gallery Images --}}
-                <div class="card card-info card-outline mb-4">
+                {{-- Simple Product Pricing & Stock --}}
+                <div class="card card-secondary card-outline mb-4 simple-section">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Pricing & Stock (Simple Product)
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="price" class="form-label">Regular Price</label>
+                                <input type="number" step="0.01" name="price" id="price" class="form-control"
+                                    value="{{ old('price') }}">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="sale_price" class="form-label">Sale Price</label>
+                                <input type="number" step="0.01" name="sale_price" id="sale_price"
+                                    class="form-control" value="{{ old('sale_price') }}">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="stock_quantity" class="form-label">Stock Quantity</label>
+                                <input type="number" name="stock_quantity" id="stock_quantity" class="form-control"
+                                    value="{{ old('stock_quantity') }}">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="weight" class="form-label">Weight (kg)</label>
+                                <input type="number" step="0.01" name="weight" id="weight" class="form-control"
+                                    value="{{ old('weight') }}">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="width" class="form-label">Width (cm)</label>
+                                <input type="number" step="0.01" name="width" id="width" class="form-control"
+                                    value="{{ old('width') }}">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="height" class="form-label">Height (cm)</label>
+                                <input type="number" step="0.01" name="height" id="height" class="form-control"
+                                    value="{{ old('height') }}">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="depth" class="form-label">Depth (cm)</label>
+                                <input type="number" step="0.01" name="depth" id="depth" class="form-control"
+                                    value="{{ old('depth') }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Main & Gallery Images (Simple Products Only) --}}
+                <div class="card card-info card-outline mb-4 simple-section">
                     <div class="card-header">
                         <div class="card-title">
                             Main & Gallery Images
@@ -173,8 +234,8 @@
                     </div>
                 </div>
 
-                {{-- Attributes --}}
-                <div class="card card-warning card-outline mb-4">
+                {{-- Attributes (Variable Products Only) --}}
+                <div class="card card-warning card-outline mb-4 variable-section">
                     <div class="card-header">
                         <div class="card-title">
                             Product Attributes
@@ -209,8 +270,8 @@
                     </div>
                 </div>
 
-                {{-- Dynamic Pricing & Inventory --}}
-                <div class="card card-success card-outline mb-4">
+                {{-- Dynamic Pricing & Inventory (Variable Products Only) --}}
+                <div class="card card-success card-outline mb-4 variable-section">
                     <div class="card-header">
                         <div class="card-title">
                             Pricing, Stock & Images (Per Combination)
@@ -237,6 +298,7 @@
                     </div>
                 </div>
             </form>
+
         </div>
     </div>
 @endsection
@@ -251,6 +313,22 @@
                 width: '100%'
             });
 
+            function toggleSections() {
+                const type = $('#product_type').val();
+                if (type === 'simple') {
+                    $('.simple-section').show();
+                    $('.variable-section').hide();
+                    $('#combination-pricing').html(
+                        '<div class="alert alert-info mb-0">Select attribute values to generate combinations...</div>'
+                        );
+                } else if (type === 'variable') {
+                    $('.simple-section').hide();
+                    $('.variable-section').show();
+                }
+            }
+            $('#product_type').on('change', toggleSections);
+            toggleSections(); // Run on page load
+
             // Tooltips
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
             tooltipTriggerList.map(function(el) {
@@ -261,7 +339,7 @@
             CKEDITOR.replace('short_description');
             CKEDITOR.replace('description');
 
-            // Slug
+            // Slug auto-generate
             $('#name').on('blur', function() {
                 const slug = $(this).val().toLowerCase().trim()
                     .replace(/[^a-z0-9\s-]/g, '')
@@ -357,13 +435,13 @@
                 if (attributeArrays.length === 0) {
                     $('#combination-pricing').html(
                         '<div class="alert alert-info mb-0">Select attribute values to generate combinations...</div>'
-                        );
+                    );
                     return;
                 }
 
                 const combinations = generateCombinations(attributeArrays);
                 let html = `<div class="table-responsive"><table class="table table-bordered align-middle">
-                    <thead class="table-light"><tr>`;
+            <thead class="table-light"><tr>`;
 
                 attributeNames.forEach(name => html += `<th>${name}</th>`);
                 html += `<th>Price</th><th>Stock</th><th>Images</th></tr></thead><tbody>`;

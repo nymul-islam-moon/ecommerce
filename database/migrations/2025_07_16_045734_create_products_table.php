@@ -12,18 +12,21 @@ class CreateProductsTable extends Migration
             $table->id();
 
             // Basic Info
-            $table->string('sku', 100)->unique();
+            $table->string('sku', 100)->nullable()->unique(); // SKU for simple products only
             $table->string('slug', 100)->unique();
             $table->string('name');
             $table->text('description')->nullable();
             $table->text('short_description')->nullable();
 
-            // Pricing
-            $table->decimal('price', 10, 2);
+            // Product Type
+            $table->enum('product_type', ['simple', 'variable'])->default('simple');
+
+            // Pricing (for simple products only)
+            $table->decimal('price', 10, 2)->nullable();
             $table->decimal('sale_price', 10, 2)->nullable();
 
-            // Inventory
-            $table->integer('stock_quantity')->default(0);
+            // Inventory (for simple products only)
+            $table->integer('stock_quantity')->nullable();
             $table->integer('low_stock_threshold')->nullable();
             $table->timestamp('restock_date')->nullable();
 
@@ -32,7 +35,6 @@ class CreateProductsTable extends Migration
             $table->decimal('width', 8, 2)->nullable();
             $table->decimal('height', 8, 2)->nullable();
             $table->decimal('depth', 8, 2)->nullable();
-            $table->string('dimensions')->nullable();
 
             // Product Identifiers
             $table->string('mpn')->nullable();

@@ -20,12 +20,12 @@ class Product extends Model
         'stock_quantity',
         'category_id',
         'subcategory_id',
-        'child_category_id', // FIXED naming
+        'child_category_id',
         'brand_id',
         'status',
         'is_featured',
         'main_image',
-        'gallery_images',
+        'product_type'
     ];
 
     // Relations
@@ -65,5 +65,15 @@ class Product extends Model
     public function scopeWithRelations($query)
     {
         return $query->with(['category', 'subcategory', 'childCategory', 'brand', 'attributes']);
+    }
+
+    public function variants()
+    {
+        return $this->hasMany(ProductVariant::class);
+    }
+
+    public function images()
+    {
+        return $this->hasMany(ProductImage::class);
     }
 }

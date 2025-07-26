@@ -22,4 +22,11 @@ class Attribute extends Model
     {
         return $this->hasMany(AttributeValue::class);
     }
+
+    public function variants()
+    {
+        return $this->belongsToMany(ProductVariant::class, 'product_variant_attributes')
+            ->withPivot('attribute_value_id')
+            ->withTimestamps();
+    }
 }
