@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\ChildCategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SubCategoryController;
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -39,4 +40,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('select-childcategories', [ChildCategoryController::class, 'selectChildCategories'])->name('select.childcategories');
     Route::get('select-brands', [BrandController::class, 'selectBrands'])->name('select.brands');
 
+});
+
+
+Route::prefix('/')->name('frontend.')->group( function (){
+    Route::get('/', [HomeController::class, 'index'])->name('home.index');
 });
