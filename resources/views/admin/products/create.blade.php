@@ -197,6 +197,12 @@
                                 <input type="number" step="0.01" name="depth" id="depth" class="form-control"
                                     value="{{ old('depth') }}">
                             </div>
+
+                             <div class="col-md-4 mb-3">
+                                <label for="low_stock_threshold" class="form-label">Low Stock Threshold</label>
+                                <input type="number" step="1" name="low_stock_threshold" id="low_stock_threshold" class="form-control"
+                                    value="{{ old('low_stock_threshold') }}">
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -25,6 +25,7 @@ class ProductController extends Controller
     {
         $query = Product::withRelations();
 
+
         if ($request->filled('name')) {
             $query->where('name', 'like', '%' . $request->name . '%');
         }
@@ -43,6 +44,7 @@ class ProductController extends Controller
 
         $products = $query->paginate(10)->appends($request->all());
 
+
         return view('admin.products.index', compact('products'));
     }
 
@@ -54,10 +56,6 @@ class ProductController extends Controller
     public function create()
     {
         return view('admin.products.create', [
-            // 'categories' => Category::all(),
-            // 'subcategories' => SubCategory::all(),
-            // 'childCategories' => ChildCategory::all(),
-            // 'brands' => Brand::all(),
             'attributes' => Attribute::with('values')->get(),
         ]);
     }
@@ -68,8 +66,6 @@ class ProductController extends Controller
     public function store(StoreProductRequest $request, MediaService $mediaService)
     {
         $formData = $request->validated();
-
-        dd($formData);
 
         DB::beginTransaction();
 
@@ -92,21 +88,82 @@ class ProductController extends Controller
                 }
             }
 
-            // Create product
-            $product = Product::create($formData);
+            // Create main product
+            $product = Product::create([
+                'name' => $formData['name'],
+                'sku' => $formData['sku'] ?? null,
+                'slug' => $formData['slug'],
+                'short_description' => $formData['short_description'] ?? null,
+                'description' => $formData['description'] ?? null,
+                'product_type' => $formData['product_type'],
+                'price' => $formData['product_type'] === 'simple' ? $formData['price'] : null,
+                'sale_price' => $formData['product_type'] === 'simple' ? ($formData['sale_price'] ?? null) : null,
+                'stock_quantity' => $formData['product_type'] === 'simple' ? ($formData['stock_quantity'] ?? 0) : null,
+                'category_id' => $formData['category_id'],
+                'subcategory_id' => $formData['subcategory_id'] ?? null,
+                'child_category_id' => $formData['child_category_id'] ?? null,
+                'brand_id' => $formData['brand_id'] ?? null,
+                'status' => $formData['status'],
+                'is_featured' => $formData['is_featured'],
+                'main_image' => $formData['main_image'] ?? null,
+            ]);
 
-            // Save gallery images (if you have a separate table for product images)
+            // Save gallery images
             if (!empty($galleryImages)) {
                 foreach ($galleryImages as $img) {
                     $product->images()->create(['image_path' => $img]);
                 }
             }
 
-            // Attach attributes
+            // Attach selected attributes (for variable products)
             if ($request->has('attribute_values')) {
-                foreach ($request->attribute_values as $attributeId => $valueId) {
-                    if ($valueId) {
-                        $product->attributes()->attach($attributeId, ['value_id' => $valueId]);
+                foreach ($request->attribute_values as $attributeId => $valueIds) {
+                    if (!empty($valueIds)) {
+                        foreach ($valueIds as $valueId) {
+                            $product->attributes()->attach($attributeId, ['value_id' => $valueId]);
+                        }
+                    }
+                }
+            }
+
+            // Handle combinations (for variable products)
+            if ($formData['product_type'] === 'variable' && isset($formData['combinations'])) {
+                foreach ($formData['combinations'] as $combination) {
+                    $variantData = [
+                        'product_id' => $product->id,
+                        'price' => $combination['price'],
+                        'sale_price' => $combination['sale_price'] ?? null,
+                        'stock_quantity' => $combination['stock_quantity'],
+                        'sku' => $combination['sku'] ?? null,
+                        'weight' => $combination['weight'] ?? null,
+                        'height' => $combination['height'] ?? null,
+                        'width' => $combination['width'] ?? null,
+                        'depth' => $combination['depth'] ?? null,
+                    ];
+
+                    // Upload variant main image
+                    if (isset($combination['main_image']) && $request->hasFile("combinations.{$loop->index}.main_image")) {
+                        $variantData['main_image'] = $mediaService->storeFile(
+                            $request->file("combinations.{$loop->index}.main_image"),
+                            'products/variants'
+                        );
+                    }
+
+                    // Create variant
+                    $variant = $product->variants()->create($variantData);
+
+                    // Upload variant gallery images
+                    if (isset($combination['gallery_images']) && $request->hasFile("combinations.{$loop->index}.gallery_images")) {
+                        foreach ($request->file("combinations.{$loop->index}.gallery_images") as $img) {
+                            $variant->images()->create([
+                                'image_path' => $mediaService->storeFile($img, 'products/variants/gallery'),
+                            ]);
+                        }
+                    }
+
+                    // Attach selected attribute values for this variant
+                    if (!empty($combination['attributes'])) {
+                        $variant->attributes()->attach($combination['attributes']);
                     }
                 }
             }
@@ -118,6 +175,7 @@ class ProductController extends Controller
             return back()->withErrors(['error' => 'Failed to create product: ' . $e->getMessage()]);
         }
     }
+
 
 
     /**
