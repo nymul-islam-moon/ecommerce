@@ -441,11 +441,11 @@
                                 @foreach ($latestProducts as $latestProduct)    
                                     <a href="#" class="latest-product__item">
                                         <div class="latest-product__item__pic">
-                                            <img src="img/latest-product/lp-1.jpg" alt="">
+                                            <img src="{{ asset('storage/' . $latestProduct->main_image) }}" alt="">
                                         </div>
                                         <div class="latest-product__item__text">
                                             <h6>{{ $latestProduct->name }}</h6>
-                                            <span>$30.00</span>
+                                            <span>{{ $latestProduct->sale_price }}</span>
                                         </div>
                                     </a>
                                 @endforeach
