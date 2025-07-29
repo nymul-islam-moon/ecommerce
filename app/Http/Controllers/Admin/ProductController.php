@@ -67,6 +67,8 @@ class ProductController extends Controller
     {
         $formData = $request->validated();
 
+        dd($formData);
+
         DB::beginTransaction();
 
         try {

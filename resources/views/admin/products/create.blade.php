@@ -5,6 +5,12 @@
 @push('admin_style')
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        .cke_notifications_area {
+            display: none !important;
+        }
+    </style>
 @endpush
 
 @section('admin_content')
@@ -198,10 +204,10 @@
                                     value="{{ old('depth') }}">
                             </div>
 
-                             <div class="col-md-4 mb-3">
+                            <div class="col-md-4 mb-3">
                                 <label for="low_stock_threshold" class="form-label">Low Stock Threshold</label>
-                                <input type="number" step="1" name="low_stock_threshold" id="low_stock_threshold" class="form-control"
-                                    value="{{ old('low_stock_threshold') }}">
+                                <input type="number" step="1" name="low_stock_threshold" id="low_stock_threshold"
+                                    class="form-control" value="{{ old('low_stock_threshold') }}">
                             </div>
                         </div>
                     </div>
@@ -259,7 +265,10 @@
                                             class="form-select select2 attribute-select @error('attribute_values.' . $attribute->id) is-invalid @enderror"
                                             multiple>
                                             @foreach ($attribute->values as $value)
-                                                <option value="{{ $value->id }}">{{ $value->value }}</option>
+                                                <option value="{{ $value->id }}"
+                                                    {{ in_array($value->id, old('attribute_values.' . $attribute->id, [])) ? 'selected' : '' }}>
+                                                    {{ $value->value }}
+                                                </option>
                                             @endforeach
                                         </select>
                                         @error('attribute_values.' . $attribute->id)
@@ -326,7 +335,7 @@
                     $('.variable-section').hide();
                     $('#combination-pricing').html(
                         '<div class="alert alert-info mb-0">Select attribute values to generate combinations...</div>'
-                        );
+                    );
                 } else if (type === 'variable') {
                     $('.simple-section').hide();
                     $('.variable-section').show();
@@ -447,7 +456,7 @@
 
                 const combinations = generateCombinations(attributeArrays);
                 let html = `<div class="table-responsive"><table class="table table-bordered align-middle">
-            <thead class="table-light"><tr>`;
+                                <thead class="table-light"><tr>`;
 
                 attributeNames.forEach(name => html += `<th>${name}</th>`);
                 html += `<th>Price</th><th>Stock</th><th>Images</th></tr></thead><tbody>`;
@@ -484,6 +493,11 @@
             }
 
             $(document).on('change', '.attribute-select', loadCombinations);
+
+            @if (old('attribute_values'))
+                loadCombinations();
+            @endif
+
         });
     </script>
 @endpush

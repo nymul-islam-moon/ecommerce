@@ -30,7 +30,7 @@ class Product extends Model
         'restock_date',
         'weight',
         'width',
-        'hight',
+        'height', // ✅ Fixed typo
         'depth',
         'mpn',
         'gtin8',
@@ -40,7 +40,7 @@ class Product extends Model
         'return_days'
     ];
 
-    // Relations
+    // Relationships
     public function category()
     {
         return $this->belongsTo(Category::class);
@@ -61,20 +61,6 @@ class Product extends Model
         return $this->belongsTo(Brand::class);
     }
 
-    // In ProductVariant.php
-    public function attributes()
-    {
-        return $this->belongsToMany(Attribute::class, 'variant_attributes')
-            ->withPivot('value_id')
-            ->withTimestamps();
-    }
-
-
-    public function attributeValues()
-    {
-        return $this->hasMany(AttributeValue::class);
-    }
-
     public function variants()
     {
         return $this->hasMany(ProductVariant::class);
@@ -85,15 +71,12 @@ class Product extends Model
         return $this->hasMany(ProductImage::class);
     }
 
-
-    // Scope for eager loading
+    // Optional: preload variants + images if needed
     public function scopeWithRelations($query)
     {
         return $query->with([
-            'variants',                  // load variants
-            'variants.attributes',       // load attributes for each variant
-            'variants.images',           // load variant images
-            'images'                     // load product images
+            'variants',
+            'images',
         ]);
     }
 }
