@@ -33,9 +33,9 @@
 
     <div class="app-content">
         <div class="container-fluid">
+
             <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
-
                 {{-- Basic Info --}}
                 <div class="card card-primary card-outline mb-4">
                     <div class="card-header">
@@ -323,6 +323,8 @@
     <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
 
     <script>
+        let oldCombinations = @json(old('combinations', []));
+        let combinationErrors = @json($errors->getMessages());
         $(document).ready(function() {
             $('.select2').select2({
                 width: '100%'
@@ -456,7 +458,7 @@
 
                 const combinations = generateCombinations(attributeArrays);
                 let html = `<div class="table-responsive"><table class="table table-bordered align-middle">
-                                <thead class="table-light"><tr>`;
+                    <thead class="table-light"><tr>`;
 
                 attributeNames.forEach(name => html += `<th>${name}</th>`);
                 html += `<th>Price</th><th>Stock</th><th>Images</th></tr></thead><tbody>`;
@@ -468,18 +470,36 @@
                         html += `<td>${text}</td>`;
                     });
 
-                    html += `<td><input type="number" name="combinations[${index}][price]" class="form-control" step="0.01" placeholder="0.00"></td>
-                     <td><input type="number" name="combinations[${index}][stock_quantity]" class="form-control" placeholder="0"></td>
-                     <td>
-                        <div class="mb-2">
-                            <label class="form-label small">Main Image:</label>
-                            <input type="file" name="combinations[${index}][main_image]" class="form-control" accept="image/*">
-                        </div>
-                        <div>
-                            <label class="form-label small">Gallery Images:</label>
-                            <input type="file" name="combinations[${index}][gallery_images][]" class="form-control" multiple accept="image/*">
-                        </div>
-                     </td>`;
+                    // Old values
+                    let price = oldCombinations[index]?.price ?? '';
+                    let stock = oldCombinations[index]?.stock_quantity ?? '';
+
+                    // Errors
+                    let priceError = combinationErrors[`combinations.${index}.price`] ?
+                        `<div class="invalid-feedback d-block">${combinationErrors[`combinations.${index}.price`][0]}</div>` :
+                        '';
+                    let stockError = combinationErrors[`combinations.${index}.stock_quantity`] ?
+                        `<div class="invalid-feedback d-block">${combinationErrors[`combinations.${index}.stock_quantity`][0]}</div>` :
+                        '';
+
+                    html += `<td>
+                    <input type="number" name="combinations[${index}][price]" value="${price}" class="form-control ${priceError ? 'is-invalid' : ''}" step="0.01" placeholder="0.00">
+                    ${priceError}
+                 </td>
+                 <td>
+                    <input type="number" name="combinations[${index}][stock_quantity]" value="${stock}" class="form-control ${stockError ? 'is-invalid' : ''}" placeholder="0">
+                    ${stockError}
+                 </td>
+                 <td>
+                    <div class="mb-2">
+                        <label class="form-label small">Main Image:</label>
+                        <input type="file" name="combinations[${index}][main_image]" class="form-control" accept="image/*">
+                    </div>
+                    <div>
+                        <label class="form-label small">Gallery Images:</label>
+                        <input type="file" name="combinations[${index}][gallery_images][]" class="form-control" multiple accept="image/*">
+                    </div>
+                 </td>`;
 
                     combo.forEach((val) => {
                         html +=
@@ -491,6 +511,7 @@
                 html += `</tbody></table></div>`;
                 $('#combination-pricing').html(html);
             }
+
 
             $(document).on('change', '.attribute-select', loadCombinations);
 

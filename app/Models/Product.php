@@ -40,7 +40,18 @@ class Product extends Model
         'return_days'
     ];
 
-    // Relationships
+
+    public function variants()
+    {
+        return $this->hasMany(ProductVariant::class);
+    }
+
+
+    public function images()
+    {
+        return $this->hasMany(ProductImage::class);
+    }
+
     public function category()
     {
         return $this->belongsTo(Category::class);
@@ -61,15 +72,6 @@ class Product extends Model
         return $this->belongsTo(Brand::class);
     }
 
-    public function variants()
-    {
-        return $this->hasMany(ProductVariant::class);
-    }
-
-    public function images()
-    {
-        return $this->hasMany(ProductImage::class);
-    }
 
     // Optional: preload variants + images if needed
     public function scopeWithRelations($query)

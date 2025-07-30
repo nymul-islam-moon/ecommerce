@@ -66,23 +66,21 @@ class ProductController extends Controller
     public function store(StoreProductRequest $request, MediaService $mediaService)
     {
         $formData = $request->validated();
-
-        dd($formData);
-
+        // dd($formData);
         DB::beginTransaction();
-
         try {
             // Generate slug if not provided
             if (empty($formData['slug'])) {
                 $formData['slug'] = Str::slug($formData['name']);
             }
 
-            // Handle main image upload
+            /** ------------------------
+             * 1. Handle Product Images
+             * ------------------------ */
             if ($request->hasFile('main_image')) {
                 $formData['main_image'] = $mediaService->storeFile($request->file('main_image'), 'products');
             }
 
-            // Handle gallery images upload
             $galleryImages = [];
             if ($request->hasFile('gallery_images')) {
                 foreach ($request->file('gallery_images') as $image) {
@@ -90,82 +88,79 @@ class ProductController extends Controller
                 }
             }
 
-            // Create main product
-            $product = Product::create([
-                'name' => $formData['name'],
-                'sku' => $formData['sku'] ?? null,
-                'slug' => $formData['slug'],
-                'short_description' => $formData['short_description'] ?? null,
-                'description' => $formData['description'] ?? null,
-                'product_type' => $formData['product_type'],
-                'price' => $formData['product_type'] === 'simple' ? $formData['price'] : null,
-                'sale_price' => $formData['product_type'] === 'simple' ? ($formData['sale_price'] ?? null) : null,
-                'stock_quantity' => $formData['product_type'] === 'simple' ? ($formData['stock_quantity'] ?? 0) : null,
-                'category_id' => $formData['category_id'],
-                'subcategory_id' => $formData['subcategory_id'] ?? null,
-                'child_category_id' => $formData['child_category_id'] ?? null,
-                'brand_id' => $formData['brand_id'] ?? null,
-                'status' => $formData['status'],
-                'is_featured' => $formData['is_featured'],
-                'main_image' => $formData['main_image'] ?? null,
-            ]);
+            /** ------------------------
+             * 2. Create Product
+             * ------------------------ */
+            // $product = Product::create([
+            //     'name' => $formData['name'],
+            //     'sku' => $formData['sku'] ?? null,
+            //     'slug' => $formData['slug'],
+            //     'short_description' => $formData['short_description'] ?? null,
+            //     'description' => $formData['description'] ?? null,
+            //     'product_type' => $formData['product_type'],
+            //     'price' => $formData['product_type'] === 'simple' ? $formData['price'] : null,
+            //     'sale_price' => $formData['product_type'] === 'simple' ? ($formData['sale_price'] ?? null) : null,
+            //     'stock_quantity' => $formData['product_type'] === 'simple' ? ($formData['stock_quantity'] ?? 0) : null,
+            //     'category_id' => $formData['category_id'],
+            //     'subcategory_id' => $formData['subcategory_id'] ?? null,
+            //     'child_category_id' => $formData['child_category_id'] ?? null,
+            //     'brand_id' => $formData['brand_id'] ?? null,
+            //     'status' => $formData['status'],
+            //     'is_featured' => $formData['is_featured'],
+            //     'main_image' => $formData['main_image'] ?? null,
+            // ]);
+
+            $product = Product::create($formData);
 
             // Save gallery images
-            if (!empty($galleryImages)) {
-                foreach ($galleryImages as $img) {
-                    $product->images()->create(['image_path' => $img]);
-                }
+            foreach ($galleryImages as $img) {
+                $product->images()->create(['image_path' => $img]);
             }
 
-            // Attach selected attributes (for variable products)
-            if ($request->has('attribute_values')) {
-                foreach ($request->attribute_values as $attributeId => $valueIds) {
-                    if (!empty($valueIds)) {
-                        foreach ($valueIds as $valueId) {
-                            $product->attributes()->attach($attributeId, ['value_id' => $valueId]);
-                        }
-                    }
-                }
-            }
-
-            // Handle combinations (for variable products)
+            /** ------------------------
+             * 3. Handle Variants (if variable)
+             * ------------------------ */
             if ($formData['product_type'] === 'variable' && isset($formData['combinations'])) {
-                foreach ($formData['combinations'] as $combination) {
-                    $variantData = [
-                        'product_id' => $product->id,
-                        'price' => $combination['price'],
-                        'sale_price' => $combination['sale_price'] ?? null,
-                        'stock_quantity' => $combination['stock_quantity'],
-                        'sku' => $combination['sku'] ?? null,
-                        'weight' => $combination['weight'] ?? null,
-                        'height' => $combination['height'] ?? null,
-                        'width' => $combination['width'] ?? null,
-                        'depth' => $combination['depth'] ?? null,
-                    ];
-
-                    // Upload variant main image
-                    if (isset($combination['main_image']) && $request->hasFile("combinations.{$loop->index}.main_image")) {
-                        $variantData['main_image'] = $mediaService->storeFile(
-                            $request->file("combinations.{$loop->index}.main_image"),
+                foreach ($formData['combinations'] as $index => $combination) {
+                    // Variant main image
+                    $variantMainImage = null;
+                    if ($request->hasFile("combinations.$index.main_image")) {
+                        $variantMainImage = $mediaService->storeFile(
+                            $request->file("combinations.$index.main_image"),
                             'products/variants'
                         );
                     }
 
                     // Create variant
-                    $variant = $product->variants()->create($variantData);
+                    $variant = $product->variants()->create([
+                        'sku' => $combination['sku'] ?? null,
+                        'price' => $combination['price'],
+                        'sale_price' => $combination['sale_price'] ?? null,
+                        'stock_quantity' => $combination['stock_quantity'],
+                        'weight' => $combination['weight'] ?? null,
+                        'height' => $combination['height'] ?? null,
+                        'width' => $combination['width'] ?? null,
+                        'depth' => $combination['depth'] ?? null,
+                    ]);
 
-                    // Upload variant gallery images
-                    if (isset($combination['gallery_images']) && $request->hasFile("combinations.{$loop->index}.gallery_images")) {
-                        foreach ($request->file("combinations.{$loop->index}.gallery_images") as $img) {
+                    // Variant gallery images
+                    if ($request->hasFile("combinations.$index.gallery_images")) {
+                        foreach ($request->file("combinations.$index.gallery_images") as $img) {
                             $variant->images()->create([
                                 'image_path' => $mediaService->storeFile($img, 'products/variants/gallery'),
                             ]);
                         }
                     }
 
-                    // Attach selected attribute values for this variant
+                    // Attach variant attributes (pivot table: product_variant_attributes)
                     if (!empty($combination['attributes'])) {
-                        $variant->attributes()->attach($combination['attributes']);
+                        $syncData = [];
+                        foreach ($combination['attributes'] as $attr) {
+                            $syncData[$attr['attribute_id']] = [
+                                'attribute_value_id' => $attr['attribute_value_id']
+                            ];
+                        }
+                        $variant->attributes()->sync($syncData);
                     }
                 }
             }
@@ -174,6 +169,10 @@ class ProductController extends Controller
             return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
+            \Log::error('Product store failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return back()->withErrors(['error' => 'Failed to create product: ' . $e->getMessage()]);
         }
     }
@@ -185,7 +184,8 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        //
+        // dd($product);
+        return view('admin.products.show', compact('product'));
     }
 
     /**

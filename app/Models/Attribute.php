@@ -25,7 +25,7 @@ class Attribute extends Model
 
     public function variants()
     {
-        return $this->belongsToMany(ProductVariant::class, 'product_variant_attributes')
+        return $this->belongsToMany(ProductVariant::class, 'variant_attributes')
             ->withPivot('attribute_value_id')
             ->withTimestamps();
     }
