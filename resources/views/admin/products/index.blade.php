@@ -96,6 +96,7 @@
                                         <th>Name</th>
                                         <th>SKU</th>
                                         <th>Price</th>
+                                        <th>Image</th>
                                         <th>Stock</th>
                                         <th>Category</th>
                                         <th>Status</th>
@@ -109,6 +110,13 @@
                                             <td>{{ $product->name }}</td>
                                             <td>{{ $product->sku }}</td>
                                             <td>${{ number_format($product->price, 2) }}</td>
+                                             <td>
+                                                @if ($product->main_image)
+                                                    <img src="{{ asset('storage/' . $product->main_image) }}" alt="{{ $product->name }}" class="img-thumbnail" style="width: 50px; height: 50px;">
+                                                @else
+                                                    <span class="text-muted">No Image</span>
+                                                @endif
+                                            </td>
                                             <td>{{ $product->stock_quantity }}</td>
                                             <td>{{ $product->category?->name ?? 'N/A' }}</td>
                                             <td>

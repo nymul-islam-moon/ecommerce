@@ -30,7 +30,7 @@ class Product extends Model
         'restock_date',
         'weight',
         'width',
-        'height', // ✅ Fixed typo
+        'height',
         'depth',
         'mpn',
         'gtin8',

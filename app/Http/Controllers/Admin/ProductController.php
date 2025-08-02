@@ -68,6 +68,7 @@ class ProductController extends Controller
         $formData = $request->validated();
         // dd($formData);
         DB::beginTransaction();
+        // dd($formData);
         try {
             // Generate slug if not provided
             if (empty($formData['slug'])) {
@@ -81,6 +82,12 @@ class ProductController extends Controller
                 $formData['main_image'] = $mediaService->storeFile($request->file('main_image'), 'products');
             }
 
+            /** ------------------------
+             * 2. Create Product
+             * ------------------------ */
+            $product = Product::create($formData);
+
+            // Save gallery images
             $galleryImages = [];
             if ($request->hasFile('gallery_images')) {
                 foreach ($request->file('gallery_images') as $image) {
@@ -88,31 +95,6 @@ class ProductController extends Controller
                 }
             }
 
-            /** ------------------------
-             * 2. Create Product
-             * ------------------------ */
-            // $product = Product::create([
-            //     'name' => $formData['name'],
-            //     'sku' => $formData['sku'] ?? null,
-            //     'slug' => $formData['slug'],
-            //     'short_description' => $formData['short_description'] ?? null,
-            //     'description' => $formData['description'] ?? null,
-            //     'product_type' => $formData['product_type'],
-            //     'price' => $formData['product_type'] === 'simple' ? $formData['price'] : null,
-            //     'sale_price' => $formData['product_type'] === 'simple' ? ($formData['sale_price'] ?? null) : null,
-            //     'stock_quantity' => $formData['product_type'] === 'simple' ? ($formData['stock_quantity'] ?? 0) : null,
-            //     'category_id' => $formData['category_id'],
-            //     'subcategory_id' => $formData['subcategory_id'] ?? null,
-            //     'child_category_id' => $formData['child_category_id'] ?? null,
-            //     'brand_id' => $formData['brand_id'] ?? null,
-            //     'status' => $formData['status'],
-            //     'is_featured' => $formData['is_featured'],
-            //     'main_image' => $formData['main_image'] ?? null,
-            // ]);
-
-            $product = Product::create($formData);
-
-            // Save gallery images
             foreach ($galleryImages as $img) {
                 $product->images()->create(['image_path' => $img]);
             }
@@ -121,6 +103,8 @@ class ProductController extends Controller
              * 3. Handle Variants (if variable)
              * ------------------------ */
             if ($formData['product_type'] === 'variable' && isset($formData['combinations'])) {
+                \Log::info('inside the variant section');
+                \Log::info($formData['combinations']);
                 foreach ($formData['combinations'] as $index => $combination) {
                     // Variant main image
                     $variantMainImage = null;
@@ -141,6 +125,7 @@ class ProductController extends Controller
                         'height' => $combination['height'] ?? null,
                         'width' => $combination['width'] ?? null,
                         'depth' => $combination['depth'] ?? null,
+                        'main_image' => $variantMainImage,
                     ]);
 
                     // Variant gallery images
@@ -209,6 +194,40 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
+        DB::beginTransaction();
+        try {
+            // Delete main image if exists
+            if ($product->main_image) {
+                app(MediaService::class)->deleteFile($product->main_image);
+            }
+
+            // Delete gallery images
+            foreach ($product->images as $image) {
+                app(MediaService::class)->deleteFile($image->image_path);
+                $image->delete();
+            }
+
+            // Delete variants and their images if any (for variable products)
+            foreach ($product->variants as $variant) {
+                foreach ($variant->images as $variantImage) {
+                    app(MediaService::class)->deleteFile($variantImage->image_path);
+                    $variantImage->delete();
+                }
+                $variant->attributes()->detach();
+                $variant->delete();
+            }
+
+            $product->delete();
+
+            DB::commit();
+            return redirect()->route('admin.products.index')->with('success', 'Product deleted successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Product delete failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return back()->withErrors(['error' => 'Failed to delete product: ' . $e->getMessage()]);
+        }
     }
 }

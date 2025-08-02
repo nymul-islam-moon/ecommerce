@@ -15,27 +15,25 @@ class ProductVariant extends Model
         'price',
         'sale_price',
         'stock_quantity',
-        'image',
+        'main_image',
         'weight',
         'height',
         'width',
         'depth'
     ];
 
-    public function product()
-    {
-        return $this->belongsTo(Product::class);
-    }
+    // public function product()
+    // {
+    //     return $this->belongsTo(Product::class);
+    // }
 
-    public function attributes()
+    public function values()
     {
-        return $this->belongsToMany(Attribute::class, 'product_variant_attributes')
-            ->withPivot('attribute_value_id')
-            ->withTimestamps();
+        return $this->belongsToMany(Attribute::class, 'product_variant_attributes');
     }
 
     public function images()
     {
-        return $this->hasMany(ProductImage::class, 'variant_id');
+        return $this->hasMany(ProductImage::class, 'product_variant_id');
     }
 }

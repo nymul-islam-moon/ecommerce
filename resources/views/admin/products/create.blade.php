@@ -461,7 +461,7 @@
                     <thead class="table-light"><tr>`;
 
                 attributeNames.forEach(name => html += `<th>${name}</th>`);
-                html += `<th>Price</th><th>Stock</th><th>Images</th></tr></thead><tbody>`;
+                html += `<th>Price</th><th>Stock</th><th>SKU</th><th>Images</th></tr></thead><tbody>`;
 
                 combinations.forEach((combo, index) => {
                     html += `<tr>`;
@@ -488,6 +488,10 @@
                  </td>
                  <td>
                     <input type="number" name="combinations[${index}][stock_quantity]" value="${stock}" class="form-control ${stockError ? 'is-invalid' : ''}" placeholder="0">
+                    ${stockError}
+                 </td>
+                  <td>
+                    <input type="text" name="combinations[${index}][sku]" value="${stock}" class="form-control ${stockError ? 'is-invalid' : ''}" placeholder="">
                     ${stockError}
                  </td>
                  <td>

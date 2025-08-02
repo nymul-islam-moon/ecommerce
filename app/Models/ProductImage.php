@@ -11,17 +11,17 @@ class ProductImage extends Model
 
     protected $fillable = [
         'product_id',
-        'variant_id',
+        'product_variant_id',
         'image_path',
     ];
 
     /**
      * Relationship: The product this image belongs to.
      */
-    public function product()
-    {
-        return $this->belongsTo(Product::class);
-    }
+    // public function product()
+    // {
+    //     return $this->belongsTo(Product::class);
+    // }
 
     /**
      * Relationship: The variant this image belongs to (optional).
