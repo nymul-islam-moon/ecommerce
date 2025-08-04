@@ -94,11 +94,13 @@
                                     <tr>
                                         <th style="width: 10px">#</th>
                                         <th>Name</th>
-                                        <th>SKU</th>
+                                        {{-- <th>SKU</th> --}}
                                         <th>Price</th>
                                         <th>Image</th>
                                         <th>Stock</th>
                                         <th>Category</th>
+                                        <th>Sub-Category</th>
+                                        <th>Child-Category</th>
                                         <th>Status</th>
                                         <th style="width: 160px">Actions</th>
                                     </tr>
@@ -108,7 +110,7 @@
                                         <tr>
                                             <td>{{ $key + $products->firstItem() }}</td>
                                             <td>{{ $product->name }}</td>
-                                            <td>{{ $product->sku }}</td>
+                                            {{-- <td>{{ $product->sku }}</td> --}}
                                             <td>${{ number_format($product->price, 2) }}</td>
                                              <td>
                                                 @if ($product->main_image)
@@ -119,6 +121,8 @@
                                             </td>
                                             <td>{{ $product->stock_quantity }}</td>
                                             <td>{{ $product->category?->name ?? 'N/A' }}</td>
+                                            <td>{{ $product->subcategory?->name ?? 'N/A' }}</td>
+                                            <td>{{ $product->childCategory?->name ?? 'N/A' }}</td>
                                             <td>
                                                 <span
                                                     class="badge bg-{{ $product->status === 'active' ? 'success' : 'secondary' }}">
