@@ -102,9 +102,16 @@ class ProductController extends Controller
             /** ------------------------
              * 3. Handle Variants (if variable)
              * ------------------------ */
-            if ($formData['product_type'] === 'variable' && isset($formData['combinations'])) {
+            if ($formData['product_type'] === 'variable' && isset($formData['combinations'], $formData['attribute_values'])) {
                 \Log::info('inside the variant section');
                 \Log::info($formData['combinations']);
+
+                $attributeValues = $formData['attribute_values']; // array(attribute_id => [value_ids])
+                $attributeIds = array_keys($attributeValues);
+
+                // Generate all attribute combinations in the order frontend expects
+                $combinationsAttributes = $this->generateCombinations(array_values($attributeValues));
+
                 foreach ($formData['combinations'] as $index => $combination) {
                     // Variant main image
                     $variantMainImage = null;
@@ -137,18 +144,23 @@ class ProductController extends Controller
                         }
                     }
 
-                    // Attach variant attributes (pivot table: product_variant_attributes)
-                    if (!empty($combination['attributes'])) {
-                        $syncData = [];
-                        foreach ($combination['attributes'] as $attr) {
-                            $syncData[$attr['attribute_id']] = [
-                                'attribute_value_id' => $attr['attribute_value_id']
+                    // Build attribute sync array for this variant
+                    $attributesForVariant = [];
+                    if (isset($combinationsAttributes[$index])) {
+                        foreach ($combinationsAttributes[$index] as $attrIndex => $valueId) {
+                            $attributesForVariant[] = [
+                                'attribute_id' => $attributeIds[$attrIndex],
+                                'attribute_value_id' => $valueId,
                             ];
                         }
-                        $variant->attributes()->sync($syncData);
+                    } else {
+                        \Log::warning('No attribute combination found for variant', ['variant_index' => $index]);
                     }
+
+                    $this->syncVariantAttributes($variant, $attributesForVariant);
                 }
             }
+
 
             DB::commit();
             return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
@@ -161,6 +173,43 @@ class ProductController extends Controller
             return back()->withErrors(['error' => 'Failed to create product: ' . $e->getMessage()]);
         }
     }
+
+    private function generateCombinations(array $arrays)
+    {
+        $result = [[]];
+        foreach ($arrays as $propertyValues) {
+            $tmp = [];
+            foreach ($result as $resultItem) {
+                foreach ($propertyValues as $propertyValue) {
+                    $tmp[] = array_merge($resultItem, [$propertyValue]);
+                }
+            }
+            $result = $tmp;
+        }
+        return $result;
+    }
+
+    private function syncVariantAttributes($variant, $attributes)
+    {
+        if (!is_array($attributes) || empty($attributes)) {
+            \Log::warning('Variant attributes missing or empty', ['variant_id' => $variant->id ?? null]);
+            return;
+        }
+
+        $syncData = [];
+        foreach ($attributes as $attr) {
+            if (isset($attr['attribute_id'], $attr['attribute_value_id'])) {
+                $syncData[$attr['attribute_id']] = ['attribute_value_id' => $attr['attribute_value_id']];
+            } else {
+                \Log::warning('Malformed attribute data', ['data' => $attr]);
+            }
+        }
+
+        if (!empty($syncData)) {
+            $variant->attributes()->sync($syncData);
+        }
+    }
+
 
 
 

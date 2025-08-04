@@ -22,15 +22,25 @@ class ProductVariant extends Model
         'depth'
     ];
 
-    // public function product()
-    // {
-    //     return $this->belongsTo(Product::class);
-    // }
-
-    public function values()
+    public function attributes()
     {
-        return $this->belongsToMany(Attribute::class, 'product_variant_attributes');
+        return $this->belongsToMany(Attribute::class, 'product_variant_attributes', 'product_variant_id', 'attribute_id')
+            ->withPivot('attribute_value_id');
     }
+
+    public function syncAttributes(array $attributes)
+    {
+        $syncData = [];
+        foreach ($attributes as $attr) {
+            if (isset($attr['attribute_id'], $attr['attribute_value_id'])) {
+                $syncData[$attr['attribute_id']] = ['attribute_value_id' => $attr['attribute_value_id']];
+            }
+        }
+        if (!empty($syncData)) {
+            $this->attributes()->sync($syncData);
+        }
+    }
+
 
     public function images()
     {
