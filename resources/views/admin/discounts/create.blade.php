@@ -2,6 +2,11 @@
 
 @section('title', 'Create Discount')
 
+@push('admin_style')
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+@endpush
+
 @section('admin_content')
     <div class="app-content-header">
         <div class="container-fluid">
@@ -31,13 +36,14 @@
                         <div class="card-body">
                             <form action="{{ route('admin.discounts.store') }}" method="POST">
                                 @csrf
-                                
+
                                 <!-- Title -->
                                 <div class="mb-3">
-                                    <label for="title" class="form-label">Title <span class="text-danger">*</span></label>
+                                    <label for="title" class="form-label">Title <span
+                                            class="text-danger">*</span></label>
                                     <input type="text" name="title" id="title"
-                                           class="form-control @error('title') is-invalid @enderror"
-                                           value="{{ old('title') }}" placeholder="Enter discount title" required>
+                                        class="form-control @error('title') is-invalid @enderror"
+                                        value="{{ old('title') }}" placeholder="Enter discount title" required>
                                     @error('title')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -46,8 +52,10 @@
                                 <!-- Type -->
                                 <div class="mb-3">
                                     <label for="type" class="form-label">Type <span class="text-danger">*</span></label>
-                                    <select name="type" id="type" class="form-select @error('type') is-invalid @enderror" required>
-                                        <option value="product" {{ old('type') == 'product' ? 'selected' : '' }}>Product</option>
+                                    <select name="type" id="type"
+                                        class="form-select @error('type') is-invalid @enderror" required>
+                                        <option value="product" {{ old('type') == 'product' ? 'selected' : '' }}>Product
+                                        </option>
                                         <option value="cart" {{ old('type') == 'cart' ? 'selected' : '' }}>Cart</option>
                                         <option value="bogo" {{ old('type') == 'bogo' ? 'selected' : '' }}>BOGO</option>
                                         <option value="bulk" {{ old('type') == 'bulk' ? 'selected' : '' }}>Bulk</option>
@@ -62,8 +70,10 @@
                                     <label for="discount_type" class="form-label">Discount Type</label>
                                     <select name="discount_type" id="discount_type" class="form-select">
                                         <option value="">None</option>
-                                        <option value="fixed" {{ old('discount_type') == 'fixed' ? 'selected' : '' }}>Fixed</option>
-                                        <option value="percent" {{ old('discount_type') == 'percent' ? 'selected' : '' }}>Percent</option>
+                                        <option value="fixed" {{ old('discount_type') == 'fixed' ? 'selected' : '' }}>
+                                            Fixed</option>
+                                        <option value="percent" {{ old('discount_type') == 'percent' ? 'selected' : '' }}>
+                                            Percent</option>
                                     </select>
                                 </div>
 
@@ -71,8 +81,8 @@
                                 <div class="mb-3">
                                     <label for="amount" class="form-label">Amount</label>
                                     <input type="number" step="0.01" name="amount" id="amount"
-                                           class="form-control @error('amount') is-invalid @enderror"
-                                           value="{{ old('amount') }}" placeholder="Enter discount amount">
+                                        class="form-control @error('amount') is-invalid @enderror"
+                                        value="{{ old('amount') }}" placeholder="Enter discount amount">
                                     @error('amount')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -82,13 +92,13 @@
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label for="buy_quantity" class="form-label">Buy Quantity</label>
-                                        <input type="number" name="buy_quantity" id="buy_quantity"
-                                               class="form-control" value="{{ old('buy_quantity') }}">
+                                        <input type="number" name="buy_quantity" id="buy_quantity" class="form-control"
+                                            value="{{ old('buy_quantity') }}">
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="get_quantity" class="form-label">Get Quantity</label>
-                                        <input type="number" name="get_quantity" id="get_quantity"
-                                               class="form-control" value="{{ old('get_quantity') }}">
+                                        <input type="number" name="get_quantity" id="get_quantity" class="form-control"
+                                            value="{{ old('get_quantity') }}">
                                     </div>
                                 </div>
 
@@ -97,7 +107,7 @@
                                     <label for="free_product_id" class="form-label">Free Product</label>
                                     <select name="free_product_id" id="free_product_id" class="form-select">
                                         <option value="">--None--</option>
-                                        @foreach($products as $product)
+                                        @foreach ($products as $product)
                                             <option value="{{ $product->id }}">{{ $product->name }}</option>
                                         @endforeach
                                     </select>
@@ -106,26 +116,28 @@
                                 <!-- Coupon Code (for cart) -->
                                 <div class="mb-3">
                                     <label for="coupon_code" class="form-label">Coupon Code</label>
-                                    <input type="text" name="coupon_code" id="coupon_code"
-                                           class="form-control" value="{{ old('coupon_code') }}" placeholder="Enter coupon code">
+                                    <input type="text" name="coupon_code" id="coupon_code" class="form-control"
+                                        value="{{ old('coupon_code') }}" placeholder="Enter coupon code">
                                 </div>
 
                                 <!-- Start & End Date -->
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <label for="start_date" class="form-label">Start Date <span class="text-danger">*</span></label>
+                                        <label for="start_date" class="form-label">Start Date <span
+                                                class="text-danger">*</span></label>
                                         <input type="datetime-local" name="start_date" id="start_date"
-                                               class="form-control @error('start_date') is-invalid @enderror"
-                                               value="{{ old('start_date') }}" required>
+                                            class="form-control @error('start_date') is-invalid @enderror"
+                                            value="{{ old('start_date') }}" required>
                                         @error('start_date')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label for="end_date" class="form-label">End Date <span class="text-danger">*</span></label>
+                                        <label for="end_date" class="form-label">End Date <span
+                                                class="text-danger">*</span></label>
                                         <input type="datetime-local" name="end_date" id="end_date"
-                                               class="form-control @error('end_date') is-invalid @enderror"
-                                               value="{{ old('end_date') }}" required>
+                                            class="form-control @error('end_date') is-invalid @enderror"
+                                            value="{{ old('end_date') }}" required>
                                         @error('end_date')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -136,7 +148,7 @@
                                 <div class="mb-3">
                                     <label for="products" class="form-label">Select Products</label>
                                     <select name="products[]" id="products" class="form-select" multiple>
-                                        @foreach($products as $product)
+                                        @foreach ($products as $product)
                                             <option value="{{ $product->id }}">{{ $product->name }}</option>
                                         @endforeach
                                     </select>
@@ -146,7 +158,7 @@
                                 <div class="mb-3">
                                     <label for="users" class="form-label">Select Users (for cart discount)</label>
                                     <select name="users[]" id="users" class="form-select" multiple>
-                                        @foreach($users as $user)
+                                        @foreach ($users as $user)
                                             <option value="{{ $user->id }}">{{ $user->name }}</option>
                                         @endforeach
                                     </select>
@@ -170,3 +182,17 @@
         </div>
     </div>
 @endsection
+
+@push('admin_scripts')
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('.select2').select2({
+                width: '100%'
+            });
+
+        });
+    </script>
+@endpush
