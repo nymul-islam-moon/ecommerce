@@ -45,4 +45,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function discounts()
+    {
+        return $this->belongsToMany(Discount::class, 'discount_users');
+    }
 }

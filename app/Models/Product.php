@@ -72,6 +72,32 @@ class Product extends Model
         return $this->belongsTo(Brand::class);
     }
 
+    public function discounts()
+    {
+        return $this->belongsToMany(Discount::class, 'discount_products');
+    }
+
+    // Auto calculate final price
+    public function getFinalPriceAttribute()
+    {
+        $discount = $this->discounts()
+            ->where('type', 'product')
+            ->whereDate('start_date', '<=', now())
+            ->whereDate('end_date', '>=', now())
+            ->first();
+
+        if (!$discount) {
+            return $this->price; // No discount
+        }
+
+        if ($discount->discount_type === 'percent') {
+            return max(0, $this->price - ($this->price * $discount->amount / 100));
+        }
+
+        return max(0, $this->price - $discount->amount);
+    }
+
+
 
     // Optional: preload variants + images if needed
     public function scopeWithRelations($query)

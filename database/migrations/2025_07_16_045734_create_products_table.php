@@ -24,6 +24,8 @@ class CreateProductsTable extends Migration
             // Pricing (for simple products only)
             $table->decimal('price', 10, 2)->nullable();
             $table->decimal('sale_price', 10, 2)->nullable();
+            $table->enum('discount_type', ['percent', 'fixed'])->nullable()->after('sale_price');
+
 
             // Inventory (for simple products only)
             $table->integer('stock_quantity')->nullable();
