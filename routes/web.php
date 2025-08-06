@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\DiscountController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SubCategoryController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ShopController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -48,4 +49,5 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 Route::prefix('/')->name('frontend.')->group( function (){
     Route::get('/', [HomeController::class, 'index'])->name('home.index');
+    Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
 });

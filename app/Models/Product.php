@@ -40,12 +40,10 @@ class Product extends Model
         'return_days'
     ];
 
-
     public function variants()
     {
         return $this->hasMany(ProductVariant::class);
     }
-
 
     public function images()
     {
@@ -97,8 +95,6 @@ class Product extends Model
         return max(0, $this->price - $discount->amount);
     }
 
-
-
     // Optional: preload variants + images if needed
     public function scopeWithRelations($query)
     {
@@ -106,5 +102,36 @@ class Product extends Model
             'variants',
             'images',
         ]);
+    }
+
+    /**
+     * Get display data for product (works for simple & variant)
+     */
+    public function getDisplayData()
+    {
+        if (in_array($this->product_type, ['variable', 'variant']) && $this->variants->isNotEmpty()) {
+            $variant = $this->variants->first();
+
+            return [
+                'image'       => $variant->main_image
+                    ? asset('storage/products/variants/' . basename($variant->main_image))
+                    : asset('images/default.png'),
+                'price'       => $variant->price,
+                'sale_price'  => $variant->sale_price,
+                'stock'       => $variant->stock_quantity,
+                'sku'         => $variant->sku,
+            ];
+        }
+
+        // Simple product
+        return [
+            'image'       => $this->main_image
+                ? asset('storage/products/' . basename($this->main_image))
+                : asset('images/default.png'),
+            'price'       => $this->price,
+            'sale_price'  => $this->sale_price,
+            'stock'       => $this->stock_quantity,
+            'sku'         => $this->sku,
+        ];
     }
 }
