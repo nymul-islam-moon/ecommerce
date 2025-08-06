@@ -50,4 +50,5 @@ Route::prefix('admin')->name('admin.')->group(function () {
 Route::prefix('/')->name('frontend.')->group( function (){
     Route::get('/', [HomeController::class, 'index'])->name('home.index');
     Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
+    Route::get('/show/{product}', [ShopController::class, 'show_product'])->name('shop.show');
 });

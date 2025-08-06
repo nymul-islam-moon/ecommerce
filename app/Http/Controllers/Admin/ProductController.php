@@ -210,9 +210,6 @@ class ProductController extends Controller
         }
     }
 
-
-
-
     /**
      * Display the specified resource.
      */
@@ -227,7 +224,10 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        //
+        return view('admin.products.edit', [
+            'product' => $product->load(['variants', 'images', 'category', 'subcategory', 'childCategory', 'brand']),
+            'attributes' => Attribute::with('values')->get(),
+        ]);
     }
 
     /**

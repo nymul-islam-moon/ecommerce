@@ -12,4 +12,9 @@ class ShopController extends Controller
         $products = Product::withRelations()->paginate(12);
         return view('frontend.shop', compact('products'));
     }
+
+    public function show_product(Product $product)
+    {
+        dd($product);
+    }
 }
